@@ -15,10 +15,7 @@
     const agent = LEAF.getAgent(agentId);
 
     if (!agent) {
-      return {
-        success: false,
-        message: "Agente no encontrado"
-      };
+      return { success: false, message: "Agente no encontrado" };
     }
 
     if (typeof description !== "string" || !description.trim()) {
@@ -39,10 +36,7 @@
     tasks.push(task);
     agent.tasks.push(task.id);
 
-    return {
-      success: true,
-      task: { ...task }
-    };
+    return { success: true, task: { ...task } };
   }
 
   function getTasks() {
@@ -67,10 +61,7 @@
     const task = tasks.find(item => item.id === id);
 
     if (!task) {
-      return {
-        success: false,
-        message: "Tarea no encontrada"
-      };
+      return { success: false, message: "Tarea no encontrada" };
     }
 
     task.status = status;
@@ -79,13 +70,9 @@
 
     if (agent && status === "working") {
       LEAF.setAgentStatus(agent.id, "working");
-    }
-
-    if (agent && status === "error") {
+    } else if (agent && status === "error") {
       LEAF.setAgentStatus(agent.id, "error");
-    }
-
-    if (agent && (status === "completed" || status === "pending")) {
+    } else if (agent) {
       const hasOtherActiveTask = tasks.some(
         item =>
           item.agentId === agent.id &&
@@ -98,10 +85,7 @@
       }
     }
 
-    return {
-      success: true,
-      task: { ...task }
-    };
+    return { success: true, task: { ...task } };
   }
 
   window.LEAF_APP = {
