@@ -1,484 +1,550 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#07110d">
-<title>LEAF OS — AI Office</title>
-<style>
-:root{--bg:#07110d;--panel:#0c1b14;--line:#1d4932;--green:#58f29a;--muted:#8ba99a;--text:#e8fff0;--gold:#d9f99d}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-button,input,select{font:inherit}
-button{cursor:pointer}
-.app{max-width:1500px;margin:auto;padding:18px}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:8px 0 18px}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:45px;height:45px;border:1px solid var(--green);border-radius:14px;display:grid;place-items:center;color:var(--green);font-size:25px}
-h1{font-size:22px;margin:0;letter-spacing:3px}
-.subtitle{color:var(--muted);font-size:12px;margin-top:5px}
-.pill{border:1px solid var(--line);padding:8px 12px;border-radius:30px;font-size:12px;color:var(--green)}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;margin-top:18px}
-.stage{position:relative;min-height:590px;background:radial-gradient(ellipse at center,#153b29 0%,#0a1b12 53%,#07110d 100%);border:1px solid var(--line);border-radius:18px;overflow:hidden}
-.stage:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#58f29a0a 1px,transparent 1px),linear-gradient(90deg,#58f29a0a 1px,transparent 1px);background-size:35px 35px;pointer-events:none}
-.stage-top{position:absolute;z-index:2;top:16px;left:18px;right:18px;display:flex;justify-content:space-between;gap:8px;align-items:center}
-.stage-label{font-size:11px;letter-spacing:2px;color:#b8e7c9}
-canvas{display:block;width:100%;height:590px;touch-action:none}
-.side{display:flex;flex-direction:column;gap:14px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px}
-.card h2{font-size:13px;letter-spacing:1.5px;margin:0 0 15px}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.stat{padding:12px;background:#07130d;border:1px solid #183d29;border-radius:11px}
-.stat strong{display:block;font-size:23px;color:var(--green)}
-.stat span{font-size:11px;color:var(--muted)}
-.agent-list{display:flex;flex-direction:column;gap:9px}
-.agent{padding:11px;border:1px solid #1b3c2a;border-radius:11px;background:#09160f}
-.agent-head{display:flex;align-items:center;gap:9px}
-.dot{width:8px;height:8px;background:#80978a;border-radius:50%;flex-shrink:0}
-.dot.working{background:var(--green);box-shadow:0 0 10px var(--green)}
-.dot.error{background:#ff7373}
-.agent-name{font-size:12px;font-weight:700}
-.agent-role{font-size:10px;color:var(--muted);margin-top:4px}
-.agent-status{margin-left:auto;font-size:10px;color:var(--muted)}
-.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.controls button,.action,.primary{border:1px solid var(--line);background:#10251a;color:var(--text);border-radius:9px;padding:11px}
-.controls button:active,.action:active,.primary:active{transform:scale(.98)}
-.controls .empty{visibility:hidden}
-.action-row{display:flex;gap:8px;flex-wrap:wrap}
-.action{flex:1;font-size:12px}
-.primary{background:var(--green);color:#052012;border-color:var(--green);font-weight:700}
-.task-form{display:flex;flex-direction:column;gap:9px}
-.task-form input,.task-form select{width:100%;padding:11px;background:#07130d;border:1px solid var(--line);border-radius:9px;color:var(--text);outline:none}
-.task-list{display:flex;flex-direction:column;gap:7px;max-height:180px;overflow:auto}
-.task{padding:10px;background:#07130d;border:1px solid #183d29;border-radius:9px;font-size:11px;overflow-wrap:anywhere}
-.task small{display:block;color:var(--muted);margin-top:5px}
-.log{font-size:11px;color:var(--muted);line-height:1.7;max-height:100px;overflow:auto}
-footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:16px 3px;color:var(--muted);font-size:10px}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#153b29;border:1px solid var(--green);border-radius:12px;padding:12px 18px;font-size:12px;display:none;z-index:10;max-width:90vw}
-@media(max-width:900px){.layout{grid-template-columns:1fr}.stage{min-height:420px}canvas{height:420px}.side{display:grid;grid-template-columns:1fr 1fr}.side .wide{grid-column:1/-1}}
-@media(max-width:520px){.app{padding:11px}.side{display:flex}.stage{min-height:350px}canvas{height:350px}h1{font-size:19px}.stage-label{font-size:9px}.pill{font-size:10px;padding:7px 9px}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LEAF OS</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07110e;
+      --panel: #101e18;
+      --green: #43f5a2;
+      --muted: #9ab4a5;
+      --border: #234335;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: #effff5;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    header {
+      padding: 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h1 { margin: 0; font-size: 25px; letter-spacing: 3px; }
+    h2 { margin: 0 0 14px; font-size: 17px; }
+    p { color: var(--muted); }
+
+    .status {
+      color: var(--green);
+      font-size: 12px;
+      border: 1px solid var(--green);
+      border-radius: 20px;
+      padding: 6px 10px;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 16px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .overview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .metric {
+      background: #0a1711;
+      padding: 13px;
+      border-radius: 10px;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--green);
+      font-size: 25px;
+    }
+
+    .metric span { font-size: 12px; color: var(--muted); }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+
+    #office {
+      width: 100%;
+      display: block;
+      background: radial-gradient(ellipse at center, #173e2c, #08120e 72%);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      touch-action: manipulation;
+    }
+
+    .hint { font-size: 12px; }
+
+    .agent-list { display: grid; gap: 9px; }
+
+    .agent {
+      padding: 12px;
+      background: #0a1711;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .agent-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .agent small { display: block; color: var(--muted); margin-top: 5px; }
+
+    .pill {
+      color: var(--green);
+      font-size: 11px;
+      border: 1px solid var(--border);
+      padding: 4px 7px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    label { display: block; margin: 12px 0 6px; font-size: 13px; }
+
+    input, select, button {
+      width: 100%;
+      border-radius: 9px;
+      padding: 12px;
+      font: inherit;
+    }
+
+    input, select {
+      background: #07110e;
+      border: 1px solid var(--border);
+      color: white;
+    }
+
+    button {
+      border: 1px solid var(--green);
+      color: #06130c;
+      background: var(--green);
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button.secondary {
+      background: #10271b;
+      color: var(--green);
+    }
+
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
+    }
+
+    .task {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      overflow-wrap: anywhere;
+    }
+
+    .task:last-child { border-bottom: 0; }
+    .task small { display: block; color: var(--muted); margin-top: 5px; }
+
+    .task-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .task-actions button { font-size: 12px; }
+
+    #message { min-height: 20px; font-size: 13px; color: var(--green); }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .workspace { grid-template-columns: 1fr; }
+      header { padding: 14px; }
+      main { padding: 12px; }
+    }
+  </style>
 </head>
+
 <body>
-<div class="app">
-<header>
-  <div class="brand">
-    <div class="logo">⌘</div>
-    <div><h1>LEAF OS</h1><div class="subtitle">VIRTUAL AI OFFICE · CONTROL CENTER</div></div>
-  </div>
-  <div class="pill" id="systemStatus">● SYSTEM ONLINE</div>
-</header>
-
-<main class="layout">
-<section class="stage">
-  <div class="stage-top">
-    <span class="stage-label">LEAF HQ / 3D ENVIRONMENT</span>
-    <span class="pill" id="viewStatus">3D VIEW</span>
-  </div>
-  <canvas id="office" aria-label="Oficina virtual 3D de LEAF OS"></canvas>
-</section>
-
-<aside class="side">
-  <section class="card">
-    <h2>ESTADO DEL SISTEMA</h2>
-    <div class="stats">
-      <div class="stat"><strong id="agentCount">4</strong><span>Agentes</span></div>
-      <div class="stat"><strong id="activeCount">0</strong><span>Trabajando</span></div>
-      <div class="stat"><strong id="taskCount">0</strong><span>Tareas totales</span></div>
-      <div class="stat"><strong id="doneCount">0</strong><span>Completadas</span></div>
+  <header>
+    <div>
+      <h1>LEAF OS</h1>
+      <div style="color:var(--muted);font-size:12px;margin-top:4px">
+        Oficina de agentes inteligentes
+      </div>
     </div>
-  </section>
+    <span class="status">● SISTEMA LISTO</span>
+  </header>
 
-  <section class="card">
-    <h2>EQUIPO DE AGENTES</h2>
-    <div class="agent-list" id="agentList"></div>
-  </section>
+  <main>
+    <section class="panel">
+      <h2>Centro de control</h2>
+      <div class="overview">
+        <div class="metric">
+          <strong id="totalAgents">4</strong>
+          <span>Agentes</span>
+        </div>
+        <div class="metric">
+          <strong id="activeAgents">0</strong>
+          <span>Trabajando</span>
+        </div>
+        <div class="metric">
+          <strong id="totalTasks">0</strong>
+          <span>Tareas creadas</span>
+        </div>
+      </div>
+    </section>
 
-  <section class="card">
-    <h2>CONTROLES DE MOVIMIENTO</h2>
-    <div class="controls">
-      <button class="empty" tabindex="-1"> </button>
-      <button data-move="0,-1">▲</button>
-      <button class="empty" tabindex="-1"> </button>
-      <button data-move="-1,0">◀</button>
-      <button data-move="0,1">▼</button>
-      <button data-move="1,0">▶</button>
+    <div class="workspace">
+      <section class="panel">
+        <h2>Oficina 3D</h2>
+        <canvas id="office" width="720" height="440"
+          aria-label="Vista ilustrada de una oficina de agentes"></canvas>
+        <p class="hint">Vista 3D simulada. Usa los controles para mover la cámara.</p>
+        <div class="overview">
+          <button class="secondary" id="leftBtn" type="button">← Izquierda</button>
+          <button class="secondary" id="rightBtn" type="button">Derecha →</button>
+          <button class="secondary" id="zoomIn" type="button">＋ Acercar</button>
+          <button class="secondary" id="zoomOut" type="button">－ Alejar</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Agentes</h2>
+        <div id="agents" class="agent-list"></div>
+      </section>
     </div>
-    <div class="action-row" style="margin-top:10px">
-      <button class="action" id="resetView">Recentrar cámara</button>
-      <button class="action" id="rotateView">Rotar vista</button>
-    </div>
-  </section>
 
-  <section class="card wide">
-    <h2>ASIGNAR TAREA</h2>
-    <form class="task-form" id="taskForm">
-      <select id="agentSelect" aria-label="Seleccionar agente"></select>
-      <input id="taskDescription" maxlength="180" placeholder="Escribe una tarea..." required>
-      <button class="primary" type="submit">Asignar tarea</button>
-    </form>
-  </section>
+    <section class="panel">
+      <h2>Crear una tarea</h2>
+      <form id="taskForm">
+        <label for="agentSelect">Asignar agente</label>
+        <select id="agentSelect" required></select>
 
-  <section class="card wide">
-    <h2>COLA DE TAREAS</h2>
-    <div class="task-list" id="taskList"><div class="log">No hay tareas todavía.</div></div>
-  </section>
+        <label for="taskDescription">Descripción de la tarea</label>
+        <input id="taskDescription" maxlength="500"
+          placeholder="Ej.: preparar un clip de video" required>
 
-  <section class="card wide">
-    <h2>REGISTRO DEL SISTEMA</h2>
-    <div class="log" id="systemLog">LEAF OS iniciado.</div>
-  </section>
-</aside>
-</main>
-<footer><span>LEAF OS v0.1.0</span><span>Interfaz local · Las tareas no se ejecutan automáticamente en servicios externos</span></footer>
-</div>
-<div class="toast" id="toast"></div>
+        <button type="submit">＋ Crear tarea</button>
+      </form>
+      <p id="message" role="status" aria-live="polite"></p>
+    </section>
 
-<script src="agents.js"></script>
-<script src="app.js"></script>
-<script>
-"use strict";
+    <section class="panel">
+      <h2>Lista de tareas</h2>
+      <div id="tasks"><p>Aún no hay tareas.</p></div>
+    </section>
+  </main>
 
-const canvas = document.getElementById("office");
-const ctx = canvas.getContext("2d");
-const toast = document.getElementById("toast");
-const logBox = document.getElementById("systemLog");
-let cameraX = 0;
-let cameraY = 0;
-let rotation = 0;
-let zoom = 1;
-let agents = [];
-let tasks = [];
-let toastTimer;
+  <footer>LEAF OS · Panel local · Versión 0.1.0</footer>
 
-const fallbackAgents = [
- {id:"clip-agent",name:"Clip Agent",role:"Preparar clips de video",status:"idle",tasks:[]},
- {id:"trend-agent",name:"Trend Agent",role:"Analizar tendencias",status:"idle",tasks:[]},
- {id:"monitor-agent",name:"Monitor Agent",role:"Supervisar redes sociales",status:"idle",tasks:[]},
- {id:"quality-agent",name:"Quality Agent",role:"Revisar calidad del contenido",status:"idle",tasks:[]}
-];
+  <script src="agents.js"></script>
+  <script src="app.js"></script>
 
-function notify(message){
- toast.textContent=message;
- toast.style.display="block";
- clearTimeout(toastTimer);
- toastTimer=setTimeout(()=>toast.style.display="none",2400);
-}
+  <script>
+    "use strict";
 
-function log(message){
- const line=document.createElement("div");
- line.textContent="› "+new Date().toLocaleTimeString()+" — "+message;
- logBox.prepend(line);
- while(logBox.children.length>8)logBox.lastChild.remove();
-}
+    const LEAF = window.LEAF_OS;
+    const APP = window.LEAF_APP;
 
-function loadAgents(){
- try{
-  agents=window.LEAF_OS && typeof window.LEAF_OS.getAgents==="function"
-   ? window.LEAF_OS.getAgents()
-   : fallbackAgents;
- }catch(e){agents=fallbackAgents}
- if(!Array.isArray(agents)||!agents.length)agents=fallbackAgents;
- agents.forEach(a=>{if(!Array.isArray(a.tasks))a.tasks=[]});
- renderAgents();
-}
+    const $ = id => document.getElementById(id);
+    const canvas = $("office");
+    const ctx = canvas.getContext("2d");
 
-function renderAgents(){
- const list=document.getElementById("agentList");
- const select=document.getElementById("agentSelect");
- list.replaceChildren();
- select.replaceChildren();
+    let cameraAngle = 0;
+    let zoom = 1;
 
- agents.forEach(agent=>{
-  const row=document.createElement("div");
-  row.className="agent";
-  const head=document.createElement("div");
-  head.className="agent-head";
-  const dot=document.createElement("span");
-  dot.className="dot "+(agent.status==="working"?"working":agent.status==="error"?"error":"");
-  const name=document.createElement("span");
-  name.className="agent-name";
-  name.textContent=agent.name;
-  const status=document.createElement("span");
-  status.className="agent-status";
-  status.textContent=agent.status==="working"?"TRABAJANDO":agent.status==="error"?"ERROR":"EN ESPERA";
-  head.append(dot,name,status);
-  const role=document.createElement("div");
-  role.className="agent-role";
-  role.textContent=agent.role;
-  row.append(head,role);
-  list.append(row);
+    const fallbackTasks = [];
+    let fallbackId = 1;
 
-  const option=document.createElement("option");
-  option.value=agent.id;
-  option.textContent=agent.name;
-  select.append(option);
- });
+    function createTask(agentId, description) {
+      if (APP) return APP.createTask(agentId, description);
 
- document.getElementById("agentCount").textContent=agents.length;
- document.getElementById("activeCount").textContent=agents.filter(a=>a.status==="working").length;
-}
+      const agent = LEAF.getAgent(agentId);
+      if (!agent) return { success: false, message: "Agente no encontrado" };
 
-function resizeCanvas(){
- const rect=canvas.getBoundingClientRect();
- const dpr=Math.min(window.devicePixelRatio||1,2);
- canvas.width=Math.round(rect.width*dpr);
- canvas.height=Math.round(rect.height*dpr);
- ctx.setTransform(dpr,0,0,dpr,0,0);
- drawOffice();
-}
+      const task = {
+        id: fallbackId++,
+        agentId,
+        description: description.trim(),
+        status: "pending",
+        createdAt: new Date().toISOString()
+      };
 
-function polygon(points,fill,stroke="#28583c"){
- ctx.beginPath();
- points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
- ctx.closePath();
- ctx.fillStyle=fill;
- ctx.fill();
- ctx.strokeStyle=stroke;
- ctx.lineWidth=1;
- ctx.stroke();
-}
+      fallbackTasks.push(task);
+      agent.tasks.push(task.id);
+      return { success: true, task };
+    }
 
-function iso(x,y,z){
- const a=(x-z)*35;
- const b=(x+z)*19-y*38;
- const c=Math.cos(rotation),s=Math.sin(rotation);
- return {x:a*c-b*s,y:a*s+b*c};
-}
+    function getTasks() {
+      return APP ? APP.getTasks() : fallbackTasks;
+    }
 
-function box3D(x,y,z,w,h,d,colors,label){
- const p=[
-  iso(x,y,z),iso(x+w,y,z),iso(x+w,y,z+d),iso(x,y,z+d),
-  iso(x,y+h,z),iso(x+w,y+h,z),iso(x+w,y+h,z+d),iso(x,y+h,z+d)
- ];
- polygon([p[4],p[5],p[6],p[7]],colors[0]);
- polygon([p[0],p[1],p[5],p[4]],colors[1]);
- polygon([p[1],p[2],p[6],p[5]],colors[2]);
- if(label){
-  const lx=(p[4].x+p[5].x+p[6].x+p[7].x)/4;
-  const ly=(p[4].y+p[5].y+p[6].y+p[7].y)/4;
-  ctx.fillStyle="#e8fff0";
-  ctx.font="bold 10px sans-serif";
-  ctx.textAlign="center";
-  ctx.fillText(label,lx,ly+3);
- }
-}
+    function updateTaskStatus(id, status) {
+      if (APP) return APP.updateTaskStatus(id, status);
 
-function drawTree(x,z){
- const p=iso(x,0,z);
- ctx.fillStyle="#3a7950";
- ctx.fillRect(p.x-3,p.y-22,6,22);
- ctx.fillStyle="#1e8b50";
- ctx.beginPath();ctx.arc(p.x,p.y-26,12,0,Math.PI*2);ctx.fill();
- ctx.fillStyle="#58f29a";
- ctx.beginPath();ctx.arc(p.x-4,p.y-29,4,0,Math.PI*2);ctx.fill();
-}
+      const task = fallbackTasks.find(item => item.id === id);
+      if (!task) return { success: false, message: "Tarea no encontrada" };
 
-function drawOffice(){
- const w=canvas.clientWidth,h=canvas.clientHeight;
- ctx.clearRect(0,0,w,h);
- ctx.save();
- ctx.translate(w/2+cameraX,h/2+cameraY+20);
- ctx.scale(zoom,zoom);
+      task.status = status;
+      const agent = LEAF.getAgent(task.agentId);
 
- polygon([iso(-5,0,-4),iso(5,0,-4),iso(5,0,5),iso(-5,0,5)],"#102a1c","#387b50");
+      if (agent) {
+        const active = fallbackTasks.some(
+          item => item.agentId === agent.id && item.status === "working"
+        );
+        LEAF.setAgentStatus(
+          agent.id,
+          status === "error" ? "error" : active ? "working" : "idle"
+        );
+      }
 
- for(let x=-5;x<=5;x++){
-  const a=iso(x,0,-4),b=iso(x,0,5);
-  ctx.strokeStyle="#28583c";ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
- }
- for(let z=-4;z<=5;z++){
-  const a=iso(-5,0,z),b=iso(5,0,z);
-  ctx.strokeStyle="#28583c";ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
- }
+      return { success: true, task };
+    }
 
- box3D(-4.5,0,-3.5,9,.14,.15,["#4b8d62","#34734a","#28583c"]);
- box3D(-4.5,0,4.5,9,.14,.15,["#4b8d62","#34734a","#28583c"]);
- box3D(-4.5,0,-3.5,.15,.14,8,["#4b8d62","#34734a","#28583c"]);
- box3D(4.35,0,-3.5,.15,.14,8,["#4b8d62","#34734a","#28583c"]);
+    function renderAgents() {
+      const agents = LEAF.getAgents();
 
- const stations=[
-  {x:-3.2,z:-2.2,label:"LEAF",color:["#32784b","#225c39","#19452c"]},
-  {x:1.1,z:-2.2,label:"CLIPS",color:["#256f51","#1a523b","#123d2b"]},
-  {x:-3.2,z:1.0,label:"ANÁLISIS",color:["#356d45","#28583a","#1a4029"]},
-  {x:1.1,z:1.0,label:"SOCIAL",color:["#3b7947","#2c6138","#1c482a"]},
-  {x:-1.1,z:3.0,label:"CALIDAD",color:["#426e43","#315737","#203f27"]}
- ];
+      $("agents").innerHTML = agents.map(agent => `
+        <div class="agent">
+          <div class="agent-top">
+            <strong>${escapeHTML(agent.name)}</strong>
+            <span class="pill">${escapeHTML(agent.status)}</span>
+          </div>
+          <small>${escapeHTML(agent.role)}</small>
+        </div>
+      `).join("");
 
- stations.forEach((s,i)=>{
-  box3D(s.x,0,s.z,1.9,.18,1.15,["#477956","#356543","#254a31"]);
-  box3D(s.x+.18,.18,s.z+.15,1.5,.55,.7,s.color,s.label);
-  box3D(s.x+.48,.73,s.z+.28,.55,.06,.25,["#9ae6b4","#5aa675","#347d4f"]);
-  if(i<agents.length){
-   const p=iso(s.x+.9,0,s.z+.9);
-   ctx.fillStyle=agents[i].status==="working"?"#58f29a":agents[i].status==="error"?"#ff7373":"#a8c7b3";
-   ctx.beginPath();ctx.arc(p.x,p.y-7,5,0,Math.PI*2);ctx.fill();
-  }
- });
+      $("agentSelect").innerHTML = agents.map(agent => `
+        <option value="${escapeHTML(agent.id)}">${escapeHTML(agent.name)}</option>
+      `).join("");
 
- drawTree(-4.1,-3.1);
- drawTree(4.1,-3.1);
- drawTree(4.1,4.1);
- drawTree(-4.1,4.1);
+      $("totalAgents").textContent = agents.length;
+      $("activeAgents").textContent = agents.filter(
+        agent => agent.status === "working"
+      ).length;
 
- box3D(-.8,0,-3.3,1.6,.45,.45,["#28583c","#1c452d","#153722"],"HQ");
- const center=iso(0,0,0);
- ctx.fillStyle="#58f29a";
- ctx.font="bold 13px sans-serif";
- ctx.textAlign="center";
- ctx.fillText("LEAF OS",center.x,center.y-16);
+      drawOffice();
+    }
 
- ctx.restore();
-}
+    function renderTasks() {
+      const tasks = getTasks();
+      $("totalTasks").textContent = tasks.length;
 
-function move(dx,dz){
- cameraX-=dx*18;
- cameraY-=dz*18;
- drawOffice();
-}
+      if (!tasks.length) {
+        $("tasks").innerHTML = "<p>Aún no hay tareas.</p>";
+        return;
+      }
 
-document.querySelectorAll("[data-move]").forEach(button=>{
- button.addEventListener("click",()=>{
-  const [dx,dz]=button.dataset.move.split(",").map(Number);
-  move(dx,dz);
- });
-});
+      $("tasks").innerHTML = tasks.slice().reverse().map(task => {
+        const agent = LEAF.getAgent(task.agentId);
+        return `
+          <div class="task">
+            <strong>#${task.id} · ${escapeHTML(task.description)}</strong>
+            <small>Agente: ${escapeHTML(agent ? agent.name : task.agentId)}</small>
+            <small>Estado: ${escapeHTML(task.status)}</small>
+            <div class="task-actions">
+              <button class="secondary" type="button"
+                data-task="${task.id}" data-status="working">Iniciar</button>
+              <button type="button"
+                data-task="${task.id}" data-status="completed">Completar</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
 
-document.getElementById("resetView").addEventListener("click",()=>{
- cameraX=0;cameraY=0;zoom=1;rotation=0;drawOffice();
- notify("Vista recentrada");
-});
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
 
-document.getElementById("rotateView").addEventListener("click",()=>{
- rotation+=Math.PI/8;drawOffice();
-});
+    function drawOffice() {
+      if (!ctx) return;
 
-canvas.addEventListener("wheel",event=>{
- event.preventDefault();
- zoom=Math.max(.55,Math.min(1.6,zoom+(event.deltaY<0?.08:-.08)));
- drawOffice();
-},{passive:false});
+      const w = canvas.width;
+      const h = canvas.height;
 
-document.addEventListener("keydown",event=>{
- if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;
- const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};
- if(moves[event.key]){
-  event.preventDefault();
-  move(...moves[event.key]);
- }
-});
+      ctx.clearRect(0, 0, w, h);
+      ctx.save();
+      ctx.translate(w / 2, h / 2);
+      ctx.scale(zoom, zoom);
+      ctx.rotate(cameraAngle * 0.04);
 
-function createTask(agentId,description){
- if(window.LEAF_APP&&typeof window.LEAF_APP.createTask==="function"){
-  return window.LEAF_APP.createTask(agentId,description);
- }
- const agent=agents.find(a=>a.id===agentId);
- if(!agent)return {success:false,message:"Agente no encontrado"};
- if(!description.trim())return {success:false,message:"Escribe una tarea"};
- const task={id:Date.now()+Math.floor(Math.random()*1000),agentId,description:description.trim(),status:"pending",createdAt:new Date().toISOString()};
- tasks.push(task);
- agent.tasks.push(task.id);
- return {success:true,task};
-}
+      const floor = ctx.createLinearGradient(-300, -100, 300, 240);
+      floor.addColorStop(0, "#173e2c");
+      floor.addColorStop(1, "#08120e");
 
-function getTasks(){
- if(window.LEAF_APP&&typeof window.LEAF_APP.getTasks==="function"){
-  return window.LEAF_APP.getTasks();
- }
- return tasks.map(t=>({...t}));
-}
+      ctx.fillStyle = floor;
+      ctx.beginPath();
+      ctx.moveTo(-310, -95);
+      ctx.lineTo(310, -95);
+      ctx.lineTo(365, 165);
+      ctx.lineTo(-365, 165);
+      ctx.closePath();
+      ctx.fill();
 
-function updateTaskStatus(id,status){
- if(window.LEAF_APP&&typeof window.LEAF_APP.updateTaskStatus==="function"){
-  return window.LEAF_APP.updateTaskStatus(id,status);
- }
- const task=tasks.find(t=>t.id===id);
- if(!task)return {success:false,message:"Tarea no encontrada"};
- task.status=status;
- const agent=agents.find(a=>a.id===task.agentId);
- if(agent){
-  agent.status=status==="working"?"working":status==="error"?"error":"idle";
- }
- return {success:true,task};
-}
+      ctx.strokeStyle = "#28583f";
+      ctx.lineWidth = 1;
 
-function renderTasks(){
- const list=document.getElementById("taskList");
- const all=getTasks();
- list.replaceChildren();
- if(!all.length){
-  const empty=document.createElement("div");
-  empty.className="log";
-  empty.textContent="No hay tareas todavía.";
-  list.append(empty);
- }else{
-  all.slice().reverse().forEach(task=>{
-   const row=document.createElement("div");
-   row.className="task";
-   const title=document.createElement("div");
-   title.textContent=task.description;
-   const small=document.createElement("small");
-   const agent=agents.find(a=>a.id===task.agentId);
-   small.textContent=(agent?agent.name:task.agentId)+" · "+task.status.toUpperCase();
-   row.append(title,small);
-   if(task.status==="pending"){
-    const start=document.createElement("button");
-    start.className="action";
-    start.style.marginTop="8px";
-    start.textContent="Iniciar";
-    start.addEventListener("click",()=>{
-     const result=updateTaskStatus(task.id,"working");
-     if(result.success){renderAgents();renderTasks();updateStats();drawOffice();log("Tarea iniciada: "+task.description);notify("Tarea marcada como trabajando");}
+      for (let i = -8; i <= 8; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * 40, -95);
+        ctx.lineTo(i * 52, 165);
+        ctx.stroke();
+      }
+
+      for (let i = 0; i < 7; i++) {
+        const y = -65 + i * 36;
+        ctx.beginPath();
+        ctx.moveTo(-330 + i * 3, y);
+        ctx.lineTo(330 - i * 3, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "#10271b";
+      ctx.fillRect(-260, -130, 520, 48);
+      ctx.strokeStyle = "#43f5a2";
+      ctx.strokeRect(-260, -130, 520, 48);
+
+      ctx.fillStyle = "#43f5a2";
+      ctx.font = "bold 18px system-ui";
+      ctx.textAlign = "center";
+      ctx.fillText("LEAF OS · AI CONTROL ROOM", 0, -100);
+
+      const agents = LEAF.getAgents();
+      const positions = [
+        [-190, -20], [-65, 25], [65, 25], [190, -20]
+      ];
+
+      agents.forEach((agent, index) => {
+        const [x, y] = positions[index];
+        const active = agent.status === "working";
+
+        ctx.fillStyle = "#0a1711";
+        ctx.fillRect(x - 42, y + 24, 84, 45);
+
+        ctx.fillStyle = "#173e2c";
+        ctx.beginPath();
+        ctx.moveTo(x - 42, y + 24);
+        ctx.lineTo(x - 29, y + 10);
+        ctx.lineTo(x + 55, y + 10);
+        ctx.lineTo(x + 42, y + 24);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = active ? "#43f5a2" : "#39765a";
+        ctx.fillRect(x - 29, y - 7, 58, 35);
+
+        ctx.fillStyle = "#07110e";
+        ctx.fillRect(x - 23, y - 1, 46, 23);
+
+        ctx.fillStyle = active ? "#43f5a2" : "#9ab4a5";
+        ctx.beginPath();
+        ctx.arc(x, y - 34, 13, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#effff5";
+        ctx.font = "11px system-ui";
+        ctx.fillText(agent.name, x, y + 86);
+
+        ctx.fillStyle = active ? "#43f5a2" : "#9ab4a5";
+        ctx.font = "10px system-ui";
+        ctx.fillText(agent.status, x, y + 101);
+      });
+
+      ctx.restore();
+    }
+
+    $("taskForm").addEventListener("submit", event => {
+      event.preventDefault();
+
+      const agentId = $("agentSelect").value;
+      const description = $("taskDescription").value.trim();
+
+      const result = createTask(agentId, description);
+
+      if (!result.success) {
+        $("message").textContent = result.message;
+        return;
+      }
+
+      $("taskDescription").value = "";
+      $("message").textContent = "Tarea creada correctamente.";
+      renderAgents();
+      renderTasks();
     });
-    row.append(start);
-   }else if(task.status==="working"){
-    const done=document.createElement("button");
-    done.className="action";
-    done.style.marginTop="8px";
-    done.textContent="Completar";
-    done.addEventListener("click",()=>{
-     const result=updateTaskStatus(task.id,"completed");
-     if(result.success){renderAgents();renderTasks();updateStats();drawOffice();log("Tarea completada: "+task.description);notify("Tarea marcada como completada");}
+
+    $("tasks").addEventListener("click", event => {
+      const button = event.target.closest("button[data-task]");
+      if (!button) return;
+
+      const id = Number(button.dataset.task);
+      const status = button.dataset.status;
+      const result = updateTaskStatus(id, status);
+
+      $("message").textContent = result.success
+        ? "Tarea actualizada."
+        : result.message;
+
+      renderAgents();
+      renderTasks();
     });
-    row.append(done);
-   }
-   list.append(row);
-  });
- }
- updateStats();
-}
 
-function updateStats(){
- const all=getTasks();
- document.getElementById("taskCount").textContent=all.length;
- document.getElementById("doneCount").textContent=all.filter(t=>t.status==="completed").length;
- document.getElementById("activeCount").textContent=agents.filter(a=>a.status==="working").length;
-}
+    $("leftBtn").addEventListener("click", () => {
+      cameraAngle -= 1;
+      drawOffice();
+    });
 
-document.getElementById("taskForm").addEventListener("submit",event=>{
- event.preventDefault();
- const agentId=document.getElementById("agentSelect").value;
- const input=document.getElementById("taskDescription");
- const description=input.value.trim();
- const result=createTask(agentId,description);
- if(!result.success){
-  notify(result.message||"No se pudo crear la tarea");
-  return;
- }
- input.value="";
- renderTasks();
- renderAgents();
- drawOffice();
- log("Tarea creada para "+(agents.find(a=>a.id===agentId)?.name||agentId));
- notify("Tarea añadida a la cola");
-});
+    $("rightBtn").addEventListener("click", () => {
+      cameraAngle += 1;
+      drawOffice();
+    });
 
-document.getElementById("systemStatus").textContent="● SYSTEM ONLINE";
-loadAgents();
-renderTasks();
-resizeCanvas();
-window.addEventListener("resize",resizeCanvas);
-log("Panel y agentes inicializados");
-</script>
+    $("zoomIn").addEventListener("click", () => {
+      zoom = Math.min(1.3, zoom + 0.1);
+      drawOffice();
+    });
+
+    $("zoomOut").addEventListener("click", () => {
+      zoom = Math.max(0.7, zoom - 0.1);
+      drawOffice();
+    });
+
+    renderAgents();
+    renderTasks();
+  </script>
 </body>
 </html>
