@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07110f">
+  <title>LEAF OS — Oficina Inteligente</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: #07110f; color: #e9fff6;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow: hidden;
+    }
+    header {
+      height: 65px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 18px;
+      background: #0c1916; border-bottom: 1px solid #24463b;
+    }
+    .brand { font-weight: 900; letter-spacing: 3px; color: #72f5b5; }
+    .status { font-size: 12px; color: #8bcbb0; }
+    #scene { width: 100%; height: calc(100dvh - 125px); display: block; }
+    .panel {
+      position: absolute; top: 80px; left: 12px; width: 205px;
+      padding: 14px; border: 1px solid #2b5747; border-radius: 15px;
+      background: #0b1915ed; box-shadow: 0 8px 30px #0007;
+    }
+    h2 { font-size: 17px; margin: 0 0 10px; }
+    .leaf { color: #76f6b5; font-weight: 800; }
+    .agent {
+      padding: 10px 0; border-bottom: 1px solid #244035;
+      font-size: 12px; display: flex; justify-content: space-between;
+      gap: 8px;
+    }
+    .online { color: #74efac; }
+    .offline { color: #9aa9a2; }
+    .hint { color: #9db7aa; font-size: 11px; line-height: 1.5; }
+    .controls {
+      position: absolute; bottom: 72px; right: 15px;
+      display: grid; grid-template-columns: repeat(3, 48px);
+      gap: 5px;
+    }
+    button {
+      border: 1px solid #39745d; border-radius: 12px;
+      background: #123026; color: white; padding: 12px 8px;
+      font-size: 17px; cursor: pointer; touch-action: manipulation;
+    }
+    button:active { background: #286348; }
+    .empty { background: #0a1713; }
+    footer {
+      height: 60px; display: flex; align-items: center;
+      justify-content: center; color: #78998a; font-size: 11px;
+      border-top: 1px solid #1e3b30; padding: 8px;
+      text-align: center;
+    }
+    @media (max-width: 520px) {
+      .panel { top: 76px; width: 168px; padding: 10px; }
+      .agent { font-size: 10px; }
+      .controls { bottom: 70px; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">LEAF OS</div>
+  <div class="status">● SISTEMA VISUAL INICIADO</div>
+</header>
+
+<canvas id="scene"></canvas>
+
+<section class="panel">
+  <h2>🌿 Centro de mando</h2>
+  <div class="leaf">LEAF · Asistente principal</div>
+  <p class="hint">Prototipo de oficina 3D</p>
+  <div class="agent"><span>🎬 Editor de clips</span><span class="offline">En espera</span></div>
+  <div class="agent"><span>📈 Analista</span><span class="offline">En espera</span></div>
+  <div class="agent"><span>📡 Monitor social</span><span class="offline">En espera</span></div>
+  <div class="agent"><span>🧪 Control de calidad</span><span class="offline">En espera</span></div>
+  <p class="hint">Usa las flechas para recorrer la oficina. Los agentes todavía son representaciones visuales.</p>
+</section>
+
+<div class="controls" aria-label="Controles de movimiento">
+  <button class="empty"></button>
+  <button id="up" aria-label="Avanzar">▲</button>
+  <button class="empty"></button>
+  <button id="left" aria-label="Izquierda">◀</button>
+  <button id="down" aria-label="Retroceder">▼</button>
+  <button id="right" aria-label="Derecha">▶</button>
+</div>
+
+<footer>LEAF OS · Oficina inteligente · Primera versión visual</footer>
+
+<script>
+(() => {
+  const canvas = document.getElementById("scene");
+  const ctx = canvas.getContext("2d");
+  let w, h, px = 0, pz = 0;
+  const keys = {};
+  const desks = [
+    [-4,-3,"LEAF"], [0,-3,"CLIPS"], [4,-3,"ANÁLISIS"],
+    [-4,2,"SOCIAL"], [0,2,"CALIDAD"], [4,2,"FUTURO"]
+  ];
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = canvas.clientWidth; h = canvas.clientHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    draw();
+  }
+
+  function project(x,y,z) {
+    const scale = Math.min(w/17, h/12);
+    return {
+      x: w/2 + (x-px)*scale*0.85 - (z-pz)*scale*0.85,
+      y: h*0.55 + (x-px)*scale*0.36 + (z-pz)*scale*0.36 - y*scale
+    };
+  }
+
+  function poly(points, fill, stroke="#315647") {
+    ctx.beginPath();
+    points.forEach((p,i) => {
+      const q = project(p[0],p[1],p[2]);
+      if (!i) ctx.moveTo(q.x,q.y); else ctx.lineTo(q.x,q.y);
+    });
+    ctx.closePath();
+    ctx.fillStyle=fill; ctx.fill();
+    ctx.strokeStyle=stroke; ctx.lineWidth=1; ctx.stroke();
+  }
+
+  function line(a,b,color="#284b3c",width=1) {
+    const p=project(...a), q=project(...b);
+    ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
+    ctx.strokeStyle=color; ctx.lineWidth=width; ctx.stroke();
+  }
+
+  function block(x,z,label,color) {
+    const a=0.85, b=0.6, top=0.8;
+    poly([[x-a,top,z-b],[x+a,top,z-b],[x+a,top,z+b],[x-a,top,z+b]],color);
+    poly([[x-a,0,z-b],[x-a,top,z-b],[x-a,top,z+b],[x-a,0,z+b]],"#18372c");
+    poly([[x+a,0,z-b],[x+a,top,z-b],[x+a,top,z+b],[x+a,0,z+b]],"#10281f");
+    const p=project(x,top+0.15,z);
+    ctx.fillStyle="#d8ffeb"; ctx.font="bold 11px sans-serif";
+    ctx.textAlign="center"; ctx.fillText(label,p.x,p.y);
+    // Pantalla
+    poly([[x-0.35,1.45,z],[x+0.35,1.45,z],[x+0.35,1.05,z],[x-0.35,1.05,z]],"#173d39","#57cda0");
+    line([x,1.05,z],[x,0.85,z],"#74d6a6",2);
+  }
+
+  function draw() {
+    if (!w || !h) return;
+    ctx.clearRect(0,0,w,h);
+    const grad=ctx.createLinearGradient(0,0,0,h);
+    grad.addColorStop(0,"#10251e"); grad.addColorStop(1,"#07110f");
+    ctx.fillStyle=grad; ctx.fillRect(0,0,w,h);
+
+    // Piso isométrico
+    poly([[-9,0,-7],[9,0,-7],[9,0,7],[-9,0,7]],"#142c23","#426d56");
+    for(let x=-8;x<=8;x+=1)
+      line([x,0,-7],[x,0,7],"#244536");
+    for(let z=-7;z<=7;z+=1)
+      line([-9,0,z],[9,0,z],"#244536");
+
+    // Paredes y ventanas
+    poly([[-9,0,-7],[9,0,-7],[9,5,-7],[-9,5,-7]],"#18382b");
+    for(let x=-7;x<=7;x+=3) {
+      poly([[x,2,-6.94],[x+1.7,2,-6.94],[x+1.7,4,-6.94],[x,4,-6.94]],"#275d55","#6cc9aa");
+    }
+    poly([[-9,0,-7],[-9,0,7],[-9,4,7],[-9,4,-7]],"#10251d");
+
+    // Oficinas
+    desks.forEach(([x,z,label],i) => {
+      block(x,z,label,i===0?"#246347":"#1a4533");
+      // Silla
+      poly([[x-0.4,0,z+1],[x+0.4,0,z+1],[x+0.4,0.6,z+1],[x-0.4,0.6,z+1]],"#315346");
+    });
+
+    // Personaje del usuario
+    const p=project(px,0.25,pz);
+    ctx.fillStyle="#71ffc0";
+    ctx.beginPath(); ctx.arc(p.x,p.y-13,7,0,Math.PI*2); ctx.fill();
+    ctx.fillRect(p.x-5,p.y-6,10,16);
+    ctx.fillStyle="#eafff3"; ctx.font="bold 10px sans-serif";
+    ctx.textAlign="center"; ctx.fillText("TÚ",p.x,p.y+24);
+
+    ctx.fillStyle="#b3e6cb"; ctx.font="12px sans-serif";
+    ctx.textAlign="left"; ctx.fillText("OFICINA PRINCIPAL · NIVEL 1",12,h-14);
+  }
+
+  function move(dx,dz) {
+    px=Math.max(-7,Math.min(7,px+dx));
+    pz=Math.max(-5,Math.min(5,pz+dz));
+    draw();
+  }
+
+  document.getElementById("up").addEventListener("click",()=>move(0,-0.7));
+  document.getElementById("down").addEventListener("click",()=>move(0,0.7));
+  document.getElementById("left").addEventListener("click",()=>move(-0.7,0));
+  document.getElementById("right").addEventListener("click",()=>move(0.7,0));
+
+  window.addEventListener("keydown",e=>{
+    if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
+      e.preventDefault();
+      if(e.key==="ArrowUp") move(0,-0.5);
+      if(e.key==="ArrowDown") move(0,0.5);
+      if(e.key==="ArrowLeft") move(-0.5,0);
+      if(e.key==="ArrowRight") move(0.5,0);
+    }
+  });
+  window.addEventListener("resize",resize);
+  resize();
+})();
+</script>
+</body>
+</html>
