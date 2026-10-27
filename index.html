@@ -1,245 +1,484 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#07110f">
-<title>LEAF OS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07110d">
+<title>LEAF OS — AI Office</title>
 <style>
-:root{--bg:#07110f;--panel:#0c1916;--line:#24463b;--green:#72f5b5;--text:#e9fff6;--muted:#9db7aa}
+:root{--bg:#07110d;--panel:#0c1b14;--line:#1d4932;--green:#58f29a;--muted:#8ba99a;--text:#e8fff0;--gold:#d9f99d}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;overflow:hidden}
-header{height:62px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line)}
-.brand{font-size:20px;font-weight:900;letter-spacing:3px;color:var(--green)}
-.status{font-size:10px;color:var(--green);text-align:right}
-#scene{display:block;width:100%;height:calc(100dvh - 122px);touch-action:none}
-.panel{position:absolute;top:76px;left:12px;width:215px;max-height:calc(100dvh - 230px);overflow:auto;padding:13px;background:#0b1915ed;border:1px solid #2b5747;border-radius:14px;box-shadow:0 8px 30px #0007;backdrop-filter:blur(8px)}
-h2{margin:0 0 10px;font-size:16px}
-.leaf{color:var(--green);font-size:12px;font-weight:800}
-.hint{color:var(--muted);font-size:11px;line-height:1.5}
-.agent{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:9px 0;border-bottom:1px solid #244035;font-size:11px}
-.agent-name{min-width:0}.online{color:#74efac}.offline{color:#9aa9a2}.error{color:#ff8585}
-.controls{position:absolute;right:15px;bottom:72px;display:grid;grid-template-columns:repeat(3,49px);gap:6px;z-index:3}
-button{min-height:46px;border:1px solid #39745d;border-radius:12px;background:#123026;color:white;font-size:19px;touch-action:none;user-select:none;-webkit-user-select:none}
-button:active{background:#286348}button.empty{visibility:hidden}
-footer{height:60px;display:flex;justify-content:center;align-items:center;padding:8px;border-top:1px solid #1e3b30;color:#78998a;font-size:10px;text-align:center}
-@media(max-width:520px){.brand{font-size:18px}.panel{width:178px;top:73px;left:8px;padding:10px}.agent{font-size:10px}.controls{right:10px;bottom:68px;grid-template-columns:repeat(3,44px);gap:5px}button{min-height:44px}}
-@media(max-height:500px){.panel{max-height:calc(100dvh - 145px)}.controls{bottom:65px}}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:1500px;margin:auto;padding:18px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:8px 0 18px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:45px;height:45px;border:1px solid var(--green);border-radius:14px;display:grid;place-items:center;color:var(--green);font-size:25px}
+h1{font-size:22px;margin:0;letter-spacing:3px}
+.subtitle{color:var(--muted);font-size:12px;margin-top:5px}
+.pill{border:1px solid var(--line);padding:8px 12px;border-radius:30px;font-size:12px;color:var(--green)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;margin-top:18px}
+.stage{position:relative;min-height:590px;background:radial-gradient(ellipse at center,#153b29 0%,#0a1b12 53%,#07110d 100%);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.stage:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#58f29a0a 1px,transparent 1px),linear-gradient(90deg,#58f29a0a 1px,transparent 1px);background-size:35px 35px;pointer-events:none}
+.stage-top{position:absolute;z-index:2;top:16px;left:18px;right:18px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.stage-label{font-size:11px;letter-spacing:2px;color:#b8e7c9}
+canvas{display:block;width:100%;height:590px;touch-action:none}
+.side{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px}
+.card h2{font-size:13px;letter-spacing:1.5px;margin:0 0 15px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.stat{padding:12px;background:#07130d;border:1px solid #183d29;border-radius:11px}
+.stat strong{display:block;font-size:23px;color:var(--green)}
+.stat span{font-size:11px;color:var(--muted)}
+.agent-list{display:flex;flex-direction:column;gap:9px}
+.agent{padding:11px;border:1px solid #1b3c2a;border-radius:11px;background:#09160f}
+.agent-head{display:flex;align-items:center;gap:9px}
+.dot{width:8px;height:8px;background:#80978a;border-radius:50%;flex-shrink:0}
+.dot.working{background:var(--green);box-shadow:0 0 10px var(--green)}
+.dot.error{background:#ff7373}
+.agent-name{font-size:12px;font-weight:700}
+.agent-role{font-size:10px;color:var(--muted);margin-top:4px}
+.agent-status{margin-left:auto;font-size:10px;color:var(--muted)}
+.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.controls button,.action,.primary{border:1px solid var(--line);background:#10251a;color:var(--text);border-radius:9px;padding:11px}
+.controls button:active,.action:active,.primary:active{transform:scale(.98)}
+.controls .empty{visibility:hidden}
+.action-row{display:flex;gap:8px;flex-wrap:wrap}
+.action{flex:1;font-size:12px}
+.primary{background:var(--green);color:#052012;border-color:var(--green);font-weight:700}
+.task-form{display:flex;flex-direction:column;gap:9px}
+.task-form input,.task-form select{width:100%;padding:11px;background:#07130d;border:1px solid var(--line);border-radius:9px;color:var(--text);outline:none}
+.task-list{display:flex;flex-direction:column;gap:7px;max-height:180px;overflow:auto}
+.task{padding:10px;background:#07130d;border:1px solid #183d29;border-radius:9px;font-size:11px;overflow-wrap:anywhere}
+.task small{display:block;color:var(--muted);margin-top:5px}
+.log{font-size:11px;color:var(--muted);line-height:1.7;max-height:100px;overflow:auto}
+footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:16px 3px;color:var(--muted);font-size:10px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#153b29;border:1px solid var(--green);border-radius:12px;padding:12px 18px;font-size:12px;display:none;z-index:10;max-width:90vw}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.stage{min-height:420px}canvas{height:420px}.side{display:grid;grid-template-columns:1fr 1fr}.side .wide{grid-column:1/-1}}
+@media(max-width:520px){.app{padding:11px}.side{display:flex}.stage{min-height:350px}canvas{height:350px}h1{font-size:19px}.stage-label{font-size:9px}.pill{font-size:10px;padding:7px 9px}}
 </style>
 </head>
 <body>
+<div class="app">
 <header>
-<div><div class="brand">LEAF OS</div><div class="hint">AI OPERATIONS CENTER</div></div>
-<div class="status" id="system-status">● INTERFAZ INICIADA</div>
+  <div class="brand">
+    <div class="logo">⌘</div>
+    <div><h1>LEAF OS</h1><div class="subtitle">VIRTUAL AI OFFICE · CONTROL CENTER</div></div>
+  </div>
+  <div class="pill" id="systemStatus">● SYSTEM ONLINE</div>
 </header>
 
-<canvas id="scene" aria-label="Oficina virtual LEAF OS"></canvas>
-
-<section class="panel">
-<h2>🌿 Centro de mando</h2>
-<div class="leaf">LEAF · Asistente principal</div>
-<p class="hint">Oficina virtual · Nivel 1</p>
-<div id="agent-list">
-<div class="agent"><span class="agent-name">🎬 Editor de clips</span><span class="offline">En espera</span></div>
-<div class="agent"><span class="agent-name">📈 Analista</span><span class="offline">En espera</span></div>
-<div class="agent"><span class="agent-name">📡 Monitor social</span><span class="offline">En espera</span></div>
-<div class="agent"><span class="agent-name">🧪 Control de calidad</span><span class="offline">En espera</span></div>
-</div>
-<p class="hint" id="connection-status">Cargando configuración...</p>
-<p class="hint">Mantén presionadas las flechas para moverte.</p>
+<main class="layout">
+<section class="stage">
+  <div class="stage-top">
+    <span class="stage-label">LEAF HQ / 3D ENVIRONMENT</span>
+    <span class="pill" id="viewStatus">3D VIEW</span>
+  </div>
+  <canvas id="office" aria-label="Oficina virtual 3D de LEAF OS"></canvas>
 </section>
 
-<div class="controls" aria-label="Controles de movimiento">
-<button class="empty" tabindex="-1" aria-hidden="true"></button>
-<button data-move="up" aria-label="Avanzar">▲</button>
-<button class="empty" tabindex="-1" aria-hidden="true"></button>
-<button data-move="left" aria-label="Izquierda">◀</button>
-<button data-move="down" aria-label="Retroceder">▼</button>
-<button data-move="right" aria-label="Derecha">▶</button>
-</div>
-<footer>LEAF OS · Oficina inteligente · En desarrollo</footer>
+<aside class="side">
+  <section class="card">
+    <h2>ESTADO DEL SISTEMA</h2>
+    <div class="stats">
+      <div class="stat"><strong id="agentCount">4</strong><span>Agentes</span></div>
+      <div class="stat"><strong id="activeCount">0</strong><span>Trabajando</span></div>
+      <div class="stat"><strong id="taskCount">0</strong><span>Tareas totales</span></div>
+      <div class="stat"><strong id="doneCount">0</strong><span>Completadas</span></div>
+    </div>
+  </section>
 
-<script src="./agents.js"></script>
+  <section class="card">
+    <h2>EQUIPO DE AGENTES</h2>
+    <div class="agent-list" id="agentList"></div>
+  </section>
+
+  <section class="card">
+    <h2>CONTROLES DE MOVIMIENTO</h2>
+    <div class="controls">
+      <button class="empty" tabindex="-1"> </button>
+      <button data-move="0,-1">▲</button>
+      <button class="empty" tabindex="-1"> </button>
+      <button data-move="-1,0">◀</button>
+      <button data-move="0,1">▼</button>
+      <button data-move="1,0">▶</button>
+    </div>
+    <div class="action-row" style="margin-top:10px">
+      <button class="action" id="resetView">Recentrar cámara</button>
+      <button class="action" id="rotateView">Rotar vista</button>
+    </div>
+  </section>
+
+  <section class="card wide">
+    <h2>ASIGNAR TAREA</h2>
+    <form class="task-form" id="taskForm">
+      <select id="agentSelect" aria-label="Seleccionar agente"></select>
+      <input id="taskDescription" maxlength="180" placeholder="Escribe una tarea..." required>
+      <button class="primary" type="submit">Asignar tarea</button>
+    </form>
+  </section>
+
+  <section class="card wide">
+    <h2>COLA DE TAREAS</h2>
+    <div class="task-list" id="taskList"><div class="log">No hay tareas todavía.</div></div>
+  </section>
+
+  <section class="card wide">
+    <h2>REGISTRO DEL SISTEMA</h2>
+    <div class="log" id="systemLog">LEAF OS iniciado.</div>
+  </section>
+</aside>
+</main>
+<footer><span>LEAF OS v0.1.0</span><span>Interfaz local · Las tareas no se ejecutan automáticamente en servicios externos</span></footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="agents.js"></script>
+<script src="app.js"></script>
 <script>
-(() => {
 "use strict";
 
-const canvas=document.getElementById("scene");
-const ctx=canvas.getContext("2d");
-const held=new Set();
-let w=0,h=0,px=0,pz=0,lastTime=0,frame=null;
+const canvas = document.getElementById("office");
+const ctx = canvas.getContext("2d");
+const toast = document.getElementById("toast");
+const logBox = document.getElementById("systemLog");
+let cameraX = 0;
+let cameraY = 0;
+let rotation = 0;
+let zoom = 1;
+let agents = [];
+let tasks = [];
+let toastTimer;
 
-const desks=[
-[-4,-3,"LEAF"],[0,-3,"CLIPS"],[4,-3,"ANÁLISIS"],
-[-4,2,"SOCIAL"],[0,2,"CALIDAD"],[4,2,"FUTURO"]
+const fallbackAgents = [
+ {id:"clip-agent",name:"Clip Agent",role:"Preparar clips de video",status:"idle",tasks:[]},
+ {id:"trend-agent",name:"Trend Agent",role:"Analizar tendencias",status:"idle",tasks:[]},
+ {id:"monitor-agent",name:"Monitor Agent",role:"Supervisar redes sociales",status:"idle",tasks:[]},
+ {id:"quality-agent",name:"Quality Agent",role:"Revisar calidad del contenido",status:"idle",tasks:[]}
 ];
 
-function resize(){
-const dpr=Math.min(window.devicePixelRatio||1,2);
-const rect=canvas.getBoundingClientRect();
-w=rect.width;h=rect.height;
-canvas.width=Math.round(w*dpr);
-canvas.height=Math.round(h*dpr);
-ctx.setTransform(dpr,0,0,dpr,0,0);
-draw();
+function notify(message){
+ toast.textContent=message;
+ toast.style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>toast.style.display="none",2400);
 }
 
-function project(x,y,z){
-const scale=Math.min(w/17,h/12);
-return{
-x:w/2+(x-px)*scale*.85-(z-pz)*scale*.85,
-y:h*.55+(x-px)*scale*.36+(z-pz)*scale*.36-y*scale
-};
+function log(message){
+ const line=document.createElement("div");
+ line.textContent="› "+new Date().toLocaleTimeString()+" — "+message;
+ logBox.prepend(line);
+ while(logBox.children.length>8)logBox.lastChild.remove();
 }
 
-function polygon(points,fill,stroke="#315647"){
-ctx.beginPath();
-points.forEach((v,i)=>{
-const p=project(v[0],v[1],v[2]);
-if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);
+function loadAgents(){
+ try{
+  agents=window.LEAF_OS && typeof window.LEAF_OS.getAgents==="function"
+   ? window.LEAF_OS.getAgents()
+   : fallbackAgents;
+ }catch(e){agents=fallbackAgents}
+ if(!Array.isArray(agents)||!agents.length)agents=fallbackAgents;
+ agents.forEach(a=>{if(!Array.isArray(a.tasks))a.tasks=[]});
+ renderAgents();
+}
+
+function renderAgents(){
+ const list=document.getElementById("agentList");
+ const select=document.getElementById("agentSelect");
+ list.replaceChildren();
+ select.replaceChildren();
+
+ agents.forEach(agent=>{
+  const row=document.createElement("div");
+  row.className="agent";
+  const head=document.createElement("div");
+  head.className="agent-head";
+  const dot=document.createElement("span");
+  dot.className="dot "+(agent.status==="working"?"working":agent.status==="error"?"error":"");
+  const name=document.createElement("span");
+  name.className="agent-name";
+  name.textContent=agent.name;
+  const status=document.createElement("span");
+  status.className="agent-status";
+  status.textContent=agent.status==="working"?"TRABAJANDO":agent.status==="error"?"ERROR":"EN ESPERA";
+  head.append(dot,name,status);
+  const role=document.createElement("div");
+  role.className="agent-role";
+  role.textContent=agent.role;
+  row.append(head,role);
+  list.append(row);
+
+  const option=document.createElement("option");
+  option.value=agent.id;
+  option.textContent=agent.name;
+  select.append(option);
+ });
+
+ document.getElementById("agentCount").textContent=agents.length;
+ document.getElementById("activeCount").textContent=agents.filter(a=>a.status==="working").length;
+}
+
+function resizeCanvas(){
+ const rect=canvas.getBoundingClientRect();
+ const dpr=Math.min(window.devicePixelRatio||1,2);
+ canvas.width=Math.round(rect.width*dpr);
+ canvas.height=Math.round(rect.height*dpr);
+ ctx.setTransform(dpr,0,0,dpr,0,0);
+ drawOffice();
+}
+
+function polygon(points,fill,stroke="#28583c"){
+ ctx.beginPath();
+ points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+ ctx.closePath();
+ ctx.fillStyle=fill;
+ ctx.fill();
+ ctx.strokeStyle=stroke;
+ ctx.lineWidth=1;
+ ctx.stroke();
+}
+
+function iso(x,y,z){
+ const a=(x-z)*35;
+ const b=(x+z)*19-y*38;
+ const c=Math.cos(rotation),s=Math.sin(rotation);
+ return {x:a*c-b*s,y:a*s+b*c};
+}
+
+function box3D(x,y,z,w,h,d,colors,label){
+ const p=[
+  iso(x,y,z),iso(x+w,y,z),iso(x+w,y,z+d),iso(x,y,z+d),
+  iso(x,y+h,z),iso(x+w,y+h,z),iso(x+w,y+h,z+d),iso(x,y+h,z+d)
+ ];
+ polygon([p[4],p[5],p[6],p[7]],colors[0]);
+ polygon([p[0],p[1],p[5],p[4]],colors[1]);
+ polygon([p[1],p[2],p[6],p[5]],colors[2]);
+ if(label){
+  const lx=(p[4].x+p[5].x+p[6].x+p[7].x)/4;
+  const ly=(p[4].y+p[5].y+p[6].y+p[7].y)/4;
+  ctx.fillStyle="#e8fff0";
+  ctx.font="bold 10px sans-serif";
+  ctx.textAlign="center";
+  ctx.fillText(label,lx,ly+3);
+ }
+}
+
+function drawTree(x,z){
+ const p=iso(x,0,z);
+ ctx.fillStyle="#3a7950";
+ ctx.fillRect(p.x-3,p.y-22,6,22);
+ ctx.fillStyle="#1e8b50";
+ ctx.beginPath();ctx.arc(p.x,p.y-26,12,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#58f29a";
+ ctx.beginPath();ctx.arc(p.x-4,p.y-29,4,0,Math.PI*2);ctx.fill();
+}
+
+function drawOffice(){
+ const w=canvas.clientWidth,h=canvas.clientHeight;
+ ctx.clearRect(0,0,w,h);
+ ctx.save();
+ ctx.translate(w/2+cameraX,h/2+cameraY+20);
+ ctx.scale(zoom,zoom);
+
+ polygon([iso(-5,0,-4),iso(5,0,-4),iso(5,0,5),iso(-5,0,5)],"#102a1c","#387b50");
+
+ for(let x=-5;x<=5;x++){
+  const a=iso(x,0,-4),b=iso(x,0,5);
+  ctx.strokeStyle="#28583c";ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+ }
+ for(let z=-4;z<=5;z++){
+  const a=iso(-5,0,z),b=iso(5,0,z);
+  ctx.strokeStyle="#28583c";ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+ }
+
+ box3D(-4.5,0,-3.5,9,.14,.15,["#4b8d62","#34734a","#28583c"]);
+ box3D(-4.5,0,4.5,9,.14,.15,["#4b8d62","#34734a","#28583c"]);
+ box3D(-4.5,0,-3.5,.15,.14,8,["#4b8d62","#34734a","#28583c"]);
+ box3D(4.35,0,-3.5,.15,.14,8,["#4b8d62","#34734a","#28583c"]);
+
+ const stations=[
+  {x:-3.2,z:-2.2,label:"LEAF",color:["#32784b","#225c39","#19452c"]},
+  {x:1.1,z:-2.2,label:"CLIPS",color:["#256f51","#1a523b","#123d2b"]},
+  {x:-3.2,z:1.0,label:"ANÁLISIS",color:["#356d45","#28583a","#1a4029"]},
+  {x:1.1,z:1.0,label:"SOCIAL",color:["#3b7947","#2c6138","#1c482a"]},
+  {x:-1.1,z:3.0,label:"CALIDAD",color:["#426e43","#315737","#203f27"]}
+ ];
+
+ stations.forEach((s,i)=>{
+  box3D(s.x,0,s.z,1.9,.18,1.15,["#477956","#356543","#254a31"]);
+  box3D(s.x+.18,.18,s.z+.15,1.5,.55,.7,s.color,s.label);
+  box3D(s.x+.48,.73,s.z+.28,.55,.06,.25,["#9ae6b4","#5aa675","#347d4f"]);
+  if(i<agents.length){
+   const p=iso(s.x+.9,0,s.z+.9);
+   ctx.fillStyle=agents[i].status==="working"?"#58f29a":agents[i].status==="error"?"#ff7373":"#a8c7b3";
+   ctx.beginPath();ctx.arc(p.x,p.y-7,5,0,Math.PI*2);ctx.fill();
+  }
+ });
+
+ drawTree(-4.1,-3.1);
+ drawTree(4.1,-3.1);
+ drawTree(4.1,4.1);
+ drawTree(-4.1,4.1);
+
+ box3D(-.8,0,-3.3,1.6,.45,.45,["#28583c","#1c452d","#153722"],"HQ");
+ const center=iso(0,0,0);
+ ctx.fillStyle="#58f29a";
+ ctx.font="bold 13px sans-serif";
+ ctx.textAlign="center";
+ ctx.fillText("LEAF OS",center.x,center.y-16);
+
+ ctx.restore();
+}
+
+function move(dx,dz){
+ cameraX-=dx*18;
+ cameraY-=dz*18;
+ drawOffice();
+}
+
+document.querySelectorAll("[data-move]").forEach(button=>{
+ button.addEventListener("click",()=>{
+  const [dx,dz]=button.dataset.move.split(",").map(Number);
+  move(dx,dz);
+ });
 });
-ctx.closePath();ctx.fillStyle=fill;ctx.fill();
-ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();
-}
 
-function line(a,b,color="#284b3c",width=1){
-const p=project(...a),q=project(...b);
-ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);
-ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();
-}
-
-function drawDesk(x,z,name,color){
-const a=.85,b=.6,t=.8;
-polygon([[x-a,t,z-b],[x+a,t,z-b],[x+a,t,z+b],[x-a,t,z+b]],color);
-polygon([[x-a,0,z-b],[x-a,t,z-b],[x-a,t,z+b],[x-a,0,z+b]],"#18372c");
-polygon([[x+a,0,z-b],[x+a,t,z-b],[x+a,t,z+b],[x+a,0,z+b]],"#10281f");
-polygon([[x-.35,1.45,z],[x+.35,1.45,z],[x+.35,1.05,z],[x-.35,1.05,z]],"#173d39","#57cda0");
-line([x,1.05,z],[x,.85,z],"#74d6a6",2);
-const p=project(x,1.05,z);
-ctx.fillStyle="#d8ffeb";ctx.font="bold 10px sans-serif";ctx.textAlign="center";
-ctx.fillText(name,p.x,p.y-10);
-polygon([[x-.4,0,z+1],[x+.4,0,z+1],[x+.4,.55,z+1],[x-.4,.55,z+1]],"#315346");
-}
-
-function draw(){
-if(!w||!h)return;
-ctx.clearRect(0,0,w,h);
-const g=ctx.createLinearGradient(0,0,0,h);
-g.addColorStop(0,"#10251e");g.addColorStop(1,"#07110f");
-ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
-
-polygon([[-9,0,-7],[9,0,-7],[9,0,7],[-9,0,7]],"#142c23","#426d56");
-for(let x=-8;x<=8;x++)line([x,0,-7],[x,0,7],"#244536");
-for(let z=-7;z<=7;z++)line([-9,0,z],[9,0,z],"#244536");
-
-polygon([[-9,0,-7],[9,0,-7],[9,5,-7],[-9,5,-7]],"#18382b");
-for(let x=-7;x<=7;x+=3){
-polygon([[x,2,-6.94],[x+1.7,2,-6.94],[x+1.7,4,-6.94],[x,4,-6.94]],"#275d55","#6cc9aa");
-}
-polygon([[-9,0,-7],[-9,0,7],[-9,4,7],[-9,4,-7]],"#10251d");
-
-desks.forEach(([x,z,name],i)=>drawDesk(x,z,name,i===0?"#246347":"#1a4533"));
-
-const p=project(px,.25,pz);
-ctx.fillStyle="#71ffc0";ctx.beginPath();ctx.arc(p.x,p.y-13,7,0,Math.PI*2);ctx.fill();
-ctx.fillRect(p.x-5,p.y-6,10,16);
-ctx.fillStyle="#eafff3";ctx.font="bold 10px sans-serif";ctx.textAlign="center";
-ctx.fillText("TÚ",p.x,p.y+24);
-ctx.fillStyle="#b3e6cb";ctx.font="11px sans-serif";ctx.textAlign="left";
-ctx.fillText("OFICINA PRINCIPAL · NIVEL 1",12,h-14);
-}
-
-function update(time){
-const dt=lastTime?Math.min((time-lastTime)/16.67,2):1;
-lastTime=time;
-const speed=.13*dt;
-if(held.has("up"))pz-=speed;
-if(held.has("down"))pz+=speed;
-if(held.has("left"))px-=speed;
-if(held.has("right"))px+=speed;
-px=Math.max(-7,Math.min(7,px));
-pz=Math.max(-5,Math.min(5,pz));
-draw();
-if(held.size)frame=requestAnimationFrame(update);
-else{frame=null;lastTime=0;}
-}
-
-function startMove(dir){
-held.add(dir);
-if(frame===null)frame=requestAnimationFrame(update);
-}
-function stopMove(dir){held.delete(dir);}
-
-document.querySelectorAll("[data-move]").forEach(btn=>{
-const dir=btn.dataset.move;
-btn.addEventListener("pointerdown",e=>{
-e.preventDefault();
-try{btn.setPointerCapture(e.pointerId);}catch(_){}
-startMove(dir);
-});
-const stop=e=>{if(e)e.preventDefault();stopMove(dir);};
-btn.addEventListener("pointerup",stop);
-btn.addEventListener("pointercancel",stop);
-btn.addEventListener("lostpointercapture",()=>stopMove(dir));
-btn.addEventListener("contextmenu",e=>e.preventDefault());
+document.getElementById("resetView").addEventListener("click",()=>{
+ cameraX=0;cameraY=0;zoom=1;rotation=0;drawOffice();
+ notify("Vista recentrada");
 });
 
-const keyMap={
-ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right",
-w:"up",s:"down",a:"left",d:"right"
-};
-window.addEventListener("keydown",e=>{
-const dir=keyMap[e.key];
-if(dir){e.preventDefault();startMove(dir);}
+document.getElementById("rotateView").addEventListener("click",()=>{
+ rotation+=Math.PI/8;drawOffice();
 });
-window.addEventListener("keyup",e=>{
-const dir=keyMap[e.key];
-if(dir)stopMove(dir);
+
+canvas.addEventListener("wheel",event=>{
+ event.preventDefault();
+ zoom=Math.max(.55,Math.min(1.6,zoom+(event.deltaY<0?.08:-.08)));
+ drawOffice();
+},{passive:false});
+
+document.addEventListener("keydown",event=>{
+ if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;
+ const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};
+ if(moves[event.key]){
+  event.preventDefault();
+  move(...moves[event.key]);
+ }
 });
-window.addEventListener("blur",()=>{held.clear();});
-window.addEventListener("resize",resize);
 
-function connectAgents(){
-const api=window.LEAF_OS;
-const list=document.getElementById("agent-list");
-const message=document.getElementById("connection-status");
-const system=document.getElementById("system-status");
-
-if(!api||typeof api.getAgents!=="function"){
-message.textContent="Módulo de agentes no disponible. Comprueba agents.js.";
-system.textContent="● MODO VISUAL";
-return;
+function createTask(agentId,description){
+ if(window.LEAF_APP&&typeof window.LEAF_APP.createTask==="function"){
+  return window.LEAF_APP.createTask(agentId,description);
+ }
+ const agent=agents.find(a=>a.id===agentId);
+ if(!agent)return {success:false,message:"Agente no encontrado"};
+ if(!description.trim())return {success:false,message:"Escribe una tarea"};
+ const task={id:Date.now()+Math.floor(Math.random()*1000),agentId,description:description.trim(),status:"pending",createdAt:new Date().toISOString()};
+ tasks.push(task);
+ agent.tasks.push(task.id);
+ return {success:true,task};
 }
 
-const agents=api.getAgents();
-list.replaceChildren();
-
-agents.forEach(agent=>{
-const row=document.createElement("div");
-row.className="agent";
-
-const name=document.createElement("span");
-name.className="agent-name";
-name.textContent=agent.name;
-
-const status=document.createElement("span");
-status.className=agent.status==="working"?"online":
-agent.status==="error"?"error":"offline";
-status.textContent=agent.status==="working"?"Trabajando":
-agent.status==="error"?"Error":"En espera";
-
-row.append(name,status);
-list.appendChild(row);
-});
-
-message.textContent="Agentes cargados · Funciones automáticas aún no activadas.";
-system.textContent="● INTERFAZ CONECTADA";
+function getTasks(){
+ if(window.LEAF_APP&&typeof window.LEAF_APP.getTasks==="function"){
+  return window.LEAF_APP.getTasks();
+ }
+ return tasks.map(t=>({...t}));
 }
 
-resize();
-connectAgents();
-})();
+function updateTaskStatus(id,status){
+ if(window.LEAF_APP&&typeof window.LEAF_APP.updateTaskStatus==="function"){
+  return window.LEAF_APP.updateTaskStatus(id,status);
+ }
+ const task=tasks.find(t=>t.id===id);
+ if(!task)return {success:false,message:"Tarea no encontrada"};
+ task.status=status;
+ const agent=agents.find(a=>a.id===task.agentId);
+ if(agent){
+  agent.status=status==="working"?"working":status==="error"?"error":"idle";
+ }
+ return {success:true,task};
+}
+
+function renderTasks(){
+ const list=document.getElementById("taskList");
+ const all=getTasks();
+ list.replaceChildren();
+ if(!all.length){
+  const empty=document.createElement("div");
+  empty.className="log";
+  empty.textContent="No hay tareas todavía.";
+  list.append(empty);
+ }else{
+  all.slice().reverse().forEach(task=>{
+   const row=document.createElement("div");
+   row.className="task";
+   const title=document.createElement("div");
+   title.textContent=task.description;
+   const small=document.createElement("small");
+   const agent=agents.find(a=>a.id===task.agentId);
+   small.textContent=(agent?agent.name:task.agentId)+" · "+task.status.toUpperCase();
+   row.append(title,small);
+   if(task.status==="pending"){
+    const start=document.createElement("button");
+    start.className="action";
+    start.style.marginTop="8px";
+    start.textContent="Iniciar";
+    start.addEventListener("click",()=>{
+     const result=updateTaskStatus(task.id,"working");
+     if(result.success){renderAgents();renderTasks();updateStats();drawOffice();log("Tarea iniciada: "+task.description);notify("Tarea marcada como trabajando");}
+    });
+    row.append(start);
+   }else if(task.status==="working"){
+    const done=document.createElement("button");
+    done.className="action";
+    done.style.marginTop="8px";
+    done.textContent="Completar";
+    done.addEventListener("click",()=>{
+     const result=updateTaskStatus(task.id,"completed");
+     if(result.success){renderAgents();renderTasks();updateStats();drawOffice();log("Tarea completada: "+task.description);notify("Tarea marcada como completada");}
+    });
+    row.append(done);
+   }
+   list.append(row);
+  });
+ }
+ updateStats();
+}
+
+function updateStats(){
+ const all=getTasks();
+ document.getElementById("taskCount").textContent=all.length;
+ document.getElementById("doneCount").textContent=all.filter(t=>t.status==="completed").length;
+ document.getElementById("activeCount").textContent=agents.filter(a=>a.status==="working").length;
+}
+
+document.getElementById("taskForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const agentId=document.getElementById("agentSelect").value;
+ const input=document.getElementById("taskDescription");
+ const description=input.value.trim();
+ const result=createTask(agentId,description);
+ if(!result.success){
+  notify(result.message||"No se pudo crear la tarea");
+  return;
+ }
+ input.value="";
+ renderTasks();
+ renderAgents();
+ drawOffice();
+ log("Tarea creada para "+(agents.find(a=>a.id===agentId)?.name||agentId));
+ notify("Tarea añadida a la cola");
+});
+
+document.getElementById("systemStatus").textContent="● SYSTEM ONLINE";
+loadAgents();
+renderTasks();
+resizeCanvas();
+window.addEventListener("resize",resizeCanvas);
+log("Panel y agentes inicializados");
 </script>
 </body>
 </html>
