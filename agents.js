@@ -1,3 +1,4 @@
+"use strict";
 
 const LEAF_OS = {
   name: "LEAF",
@@ -61,11 +62,17 @@ const LEAF_OS = {
     const agent = this.getAgent(id);
 
     if (!agent) {
-      return { success: false, message: "Agente no encontrado" };
+      return {
+        success: false,
+        message: "Agente no encontrado"
+      };
     }
 
     if (!allowedStatuses.includes(status)) {
-      return { success: false, message: "Estado no válido" };
+      return {
+        success: false,
+        message: "Estado no válido"
+      };
     }
 
     agent.status = status;
