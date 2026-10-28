@@ -261,26 +261,40 @@
       <h2>Lista de tareas</h2>
       <div id="tasks"><p>Aún no hay tareas.</p></div>
     </section>
+
+    <section class="panel">
+      <h2>Clip Agent · Validador de enlaces</h2>
+      <p class="hint">
+        Esta herramienta comprueba el formato de un enlace. Todavía no descarga
+        ni recorta videos.
+      </p>
+      <form id="clipForm">
+        <label for="videoUrl">Enlace del video</label>
+        <input id="videoUrl" type="url" placeholder="https://ejemplo.com/video"
+          maxlength="2000" required>
+        <button type="submit">Validar enlace</button>
+      </form>
+      <p id="clipMessage" role="status" aria-live="polite"></p>
+    </section>
   </main>
 
   <footer>LEAF OS · Panel local · Versión 0.1.0</footer>
 
   <script src="agents.js"></script>
   <script src="app.js"></script>
+  <script src="clip_agent.js"></script>
 
   <script>
     "use strict";
 
     const LEAF = window.LEAF_OS;
     const APP = window.LEAF_APP;
-
     const $ = id => document.getElementById(id);
     const canvas = $("office");
     const ctx = canvas.getContext("2d");
 
     let cameraAngle = 0;
     let zoom = 1;
-
     const fallbackTasks = [];
     let fallbackId = 1;
 
@@ -320,6 +334,7 @@
         const active = fallbackTasks.some(
           item => item.agentId === agent.id && item.status === "working"
         );
+
         LEAF.setAgentStatus(
           agent.id,
           status === "error" ? "error" : active ? "working" : "idle"
@@ -327,6 +342,16 @@
       }
 
       return { success: true, task };
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
     }
 
     function renderAgents() {
@@ -365,6 +390,7 @@
 
       $("tasks").innerHTML = tasks.slice().reverse().map(task => {
         const agent = LEAF.getAgent(task.agentId);
+
         return `
           <div class="task">
             <strong>#${task.id} · ${escapeHTML(task.description)}</strong>
@@ -379,16 +405,6 @@
           </div>
         `;
       }).join("");
-    }
-
-    function escapeHTML(value) {
-      return String(value).replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      })[char]);
     }
 
     function drawOffice() {
@@ -491,10 +507,10 @@
     $("taskForm").addEventListener("submit", event => {
       event.preventDefault();
 
-      const agentId = $("agentSelect").value;
-      const description = $("taskDescription").value.trim();
-
-      const result = createTask(agentId, description);
+      const result = createTask(
+        $("agentSelect").value,
+        $("taskDescription").value.trim()
+      );
 
       if (!result.success) {
         $("message").textContent = result.message;
@@ -511,9 +527,10 @@
       const button = event.target.closest("button[data-task]");
       if (!button) return;
 
-      const id = Number(button.dataset.task);
-      const status = button.dataset.status;
-      const result = updateTaskStatus(id, status);
+      const result = updateTaskStatus(
+        Number(button.dataset.task),
+        button.dataset.status
+      );
 
       $("message").textContent = result.success
         ? "Tarea actualizada."
@@ -541,6 +558,24 @@
     $("zoomOut").addEventListener("click", () => {
       zoom = Math.max(0.7, zoom - 0.1);
       drawOffice();
+    });
+
+    $("clipForm").addEventListener("submit", event => {
+      event.preventDefault();
+
+      const url = $("videoUrl").value.trim();
+      const clipAgent = window.LEAF_CLIP_AGENT;
+
+      if (!clipAgent) {
+        $("clipMessage").textContent = "Clip Agent no está cargado.";
+        return;
+      }
+
+      const result = clipAgent.validateVideoUrl(url);
+
+      $("clipMessage").textContent = result.success
+        ? "Enlace válido: " + result.url
+        : result.message;
     });
 
     renderAgents();
