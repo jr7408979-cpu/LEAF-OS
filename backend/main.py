@@ -2,6 +2,7 @@
 from datetime import datetime, timezone
 from threading import Lock
 from uuid import uuid4
+from urllib.parse import urlparse
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,11 +11,9 @@ from pydantic import BaseModel, Field
 app = FastAPI(
     title="LEAF OS Backend",
     description="API central para administrar los agentes de LEAF OS",
-    version="0.1.0",
+    version="0.2.0",
 )
 
-# Durante el desarrollo, permite conectar la web publicada.
-# En producción, limita estos orígenes a tus dominios.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -63,15 +62,49 @@ AGENTS = {
 TASKS = {}
 ACTIVITY = []
 
+ALLOWED_HOSTS = {
+    "youtube.com",
+    "youtu.be",
+    "tiktok.com",
+    "kick.com",
+}
+
 
 class TaskInput(BaseModel):
     agent_id: str
     description: str = Field(min_length=1, max_length=500)
     priority: str = "Normal"
+    video_url: str | None = Field(default=None, max_length=1000)
 
 
 class TaskUpdate(BaseModel):
     status: str
+
+
+def validate_video_url(video_url: str | None):
+    if not video_url:
+        return None
+
+    video_url = video_url.strip()
+
+    try:
+        parsed = urlparse(video_url)
+        host = (parsed.hostname or "").lower().rstrip(".")
+    except ValueError:
+        raise HTTPException(422, "Enlace de video no válido")
+
+    allowed = any(
+        host == domain or host.endswith("." + domain)
+        for domain in ALLOWED_HOSTS
+    )
+
+    if parsed.scheme != "https" or not allowed:
+        raise HTTPException(
+            422,
+            "Usa un enlace HTTPS válido de YouTube, TikTok o Kick",
+        )
+
+    return video_url
 
 
 def record_event(message: str, event_type: str = "info"):
@@ -95,7 +128,7 @@ def task_copy(task):
 def root():
     return {
         "name": "LEAF OS",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "status": "online",
         "message": "Backend iniciado correctamente",
     }
@@ -115,7 +148,7 @@ def system_status():
         tasks = list(TASKS.values())
         return {
             "name": "LEAF OS",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "agents_total": len(AGENTS),
             "agents_working": sum(
                 agent["status"] == "working"
@@ -160,10 +193,15 @@ def create_task(data: TaskInput):
     description = data.description.strip()
 
     if not description:
-        raise HTTPException(422, "La descripción no puede estar vacía")
+        raise HTTPException(
+            422,
+            "La descripción no puede estar vacía",
+        )
 
     if data.priority not in ("Normal", "Alta", "Urgente"):
         raise HTTPException(422, "Prioridad no válida")
+
+    video_url = validate_video_url(data.video_url)
 
     with lock:
         agent = AGENTS.get(data.agent_id)
@@ -171,21 +209,26 @@ def create_task(data: TaskInput):
             raise HTTPException(404, "Agente no encontrado")
 
         task_id = str(uuid4())
+        now = datetime.now(timezone.utc).isoformat()
+
         task = {
             "id": task_id,
             "agent_id": data.agent_id,
             "description": description,
             "priority": data.priority,
+            "video_url": video_url,
             "status": "pending",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": now,
+            "updated_at": now,
         }
 
         TASKS[task_id] = task
-        record_event(
-            f"Tarea creada para {agent['name']}: {description}",
-            "success",
-        )
+
+        message = f"Tarea creada para {agent['name']}: {description}"
+        if video_url:
+            message += " (incluye enlace de video)"
+
+        record_event(message, "success")
         return task_copy(task)
 
 
@@ -218,6 +261,7 @@ def update_task(task_id: str, data: TaskUpdate):
             f"{agent['name']}: tarea {task_id} -> {data.status}",
             "error" if data.status == "error" else "success",
         )
+
         return task_copy(task)
 
 
