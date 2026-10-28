@@ -3,326 +3,432 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#080c13">
 <title>LEAF OS — Command Center</title>
 <style>
-:root{--bg:#080c13;--panel:#101722;--border:#243244;--green:#55ffc0;--blue:#62a8ff;--purple:#b99aff;--red:#ff7085;--yellow:#ffd477;--muted:#8494a9;--text:#eaf2ff}
+:root {
+  --bg:#080c13;--panel:#101722;--border:#243244;
+  --green:#55ffc0;--blue:#62a8ff;--purple:#b99aff;
+  --red:#ff7085;--yellow:#ffd477;--muted:#8494a9;--text:#eaf2ff;
+}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-button,input,select{font:inherit}
-button{cursor:pointer}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--green);outline-offset:3px}
-header{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 20px;background:#080c13ee;backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:43px;height:43px;border-radius:13px;display:grid;place-items:center;color:var(--green);font-size:23px;font-weight:900;border:1px solid #367c68;background:#102b28}
-h1{font-size:20px;letter-spacing:2px;margin:0}
-h2{font-size:15px;margin:0;font-weight:700}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#080c13f5;z-index:5}
+h1{font-size:21px;letter-spacing:2px;margin:0}
+h2{font-size:16px;margin:0}
 h3{font-size:13px;margin:0}
-.subtitle{font-size:11px;color:var(--muted);margin-top:4px}
-.live{display:flex;align-items:center;gap:7px;border:1px solid #245844;background:#0c201c;color:var(--green);border-radius:30px;padding:8px 11px;font-size:11px}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block}
-main{max-width:1450px;margin:auto;padding:20px}
-.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}
-.eyebrow{color:var(--muted);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
-.muted{color:var(--muted)}
-.small{font-size:11px}
-.green{color:var(--green)}.blue{color:var(--blue)}.purple{color:var(--purple)}.red{color:var(--red)}.yellow{color:var(--yellow)}
-.panel{background:linear-gradient(145deg,#121b28,#0d141e);border:1px solid var(--border);border-radius:16px;padding:17px;min-width:0}
-.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
-.metric-label{font-size:11px;color:var(--muted)}
-.metric-value{font-size:29px;font-weight:750;margin:12px 0 6px}
-.metric-foot{font-size:10px;color:var(--muted)}
-.layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.8fr);gap:16px;align-items:start}
-.stack{display:grid;gap:16px;min-width:0}
-.control-room{overflow:hidden}
-.room-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
-.tag{font-size:10px;color:var(--green);border:1px solid #285746;background:#0b211b;padding:6px 8px;border-radius:7px;white-space:nowrap}
-#scene{display:block;width:100%;height:auto;min-height:230px;background:#08111b;border:1px solid #253d4e;border-radius:12px}
-.room-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.btn{border:1px solid var(--border);background:#151f2d;color:var(--text);border-radius:9px;padding:10px 12px;font-size:11px;font-weight:650}
-.btn:hover{border-color:#55708d}
-.btn-primary{background:var(--green);color:#06130e;border-color:var(--green)}
-.btn-danger{color:var(--red)}
-.room-note{font-size:10px;color:var(--muted);margin-top:12px;line-height:1.5}
-.agent-grid{display:grid;gap:9px}
-.agent-card{border:1px solid var(--border);border-radius:11px;padding:12px;background:#0b121c}
-.agent-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
-.agent-identity{display:flex;align-items:center;gap:10px;min-width:0}
-.agent-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:14px;font-weight:800;background:#142b2a;color:var(--green);flex-shrink:0}
-.agent-card:nth-child(2) .agent-icon{background:#17243c;color:var(--blue)}
-.agent-card:nth-child(3) .agent-icon{background:#281e3c;color:var(--purple)}
-.agent-card:nth-child(4) .agent-icon{background:#332a19;color:var(--yellow)}
-.agent-name{font-size:12px;font-weight:700}
-.agent-role{font-size:10px;color:var(--muted);margin-top:4px}
-.badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;padding:5px 7px;border-radius:7px;color:var(--muted);background:#17202c;border:1px solid #2a3849;white-space:nowrap}
-.badge.working{color:var(--green);border-color:#285744;background:#10251f}
-.badge.error{color:var(--red);border-color:#663341;background:#2b1720}
-.badge.completed{color:var(--purple)}
-.agent-task{border-top:1px solid #1e2a39;margin-top:10px;padding-top:9px;font-size:10px;color:var(--muted);overflow-wrap:anywhere}
-.agent-task strong{color:var(--text);font-weight:550}
-.activity-list{display:grid;gap:0;max-height:365px;overflow:auto}
-.activity{display:grid;grid-template-columns:26px 1fr;gap:9px;padding:11px 0;border-bottom:1px solid #1d2938}
-.activity:last-child{border-bottom:0}
-.activity-icon{width:25px;height:25px;border-radius:8px;display:grid;place-items:center;background:#17271f;color:var(--green);font-size:12px}
-.activity-text{font-size:11px;line-height:1.5;overflow-wrap:anywhere}
-.activity-time{font-size:9px;color:var(--muted);margin-top:4px}
-.empty{color:var(--muted);font-size:11px;padding:18px 0;line-height:1.6}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+main{max-width:1200px;margin:auto;padding:18px}
+.green{color:var(--green)}.muted{color:var(--muted)}
+.subtitle,.small{font-size:11px;color:var(--muted)}
+.live,.tag,.badge{font-size:10px;padding:7px 10px;border:1px solid var(--border);border-radius:9px}
+.live{color:var(--green);border-color:#285746}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:15px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;min-width:0}
+.metric-value{font-size:28px;font-weight:750;margin:10px 0}
+.metric-label{font-size:10px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:1.3fr .8fr;gap:15px}
+.stack{display:grid;gap:15px;align-content:start}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
 label{display:block;font-size:10px;color:var(--muted);margin:12px 0 6px}
-input,select{width:100%;background:#080f18;border:1px solid var(--border);color:var(--text);border-radius:9px;padding:12px;font-size:12px}
-form .btn-primary{width:100%;margin-top:13px}
-.task-list{display:grid;gap:9px}
-.task-item{padding:12px;border:1px solid var(--border);border-radius:11px;background:#0b121c}
+input,select{width:100%;padding:12px;background:#080f18;border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:13px}
+button{font:inherit;cursor:pointer}
+.btn{padding:10px 12px;background:#172231;color:var(--text);border:1px solid var(--border);border-radius:9px;font-size:11px}
+.btn-primary{background:var(--green);color:#06130e;border-color:var(--green);font-weight:700}
+.btn:disabled{opacity:.5;cursor:wait}
+form .btn-primary{width:100%;margin-top:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.agent-grid,.task-list,.activity-list{display:grid;gap:9px}
+.agent-card,.task-item{padding:12px;background:#0b121c;border:1px solid var(--border);border-radius:10px;overflow-wrap:anywhere}
+.agent-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.agent-role,.task-meta,.activity-time{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.6}
+.badge.working{color:var(--green)}.badge.error{color:var(--red)}.badge.completed{color:var(--purple)}
 .task-title{font-size:12px;font-weight:650;overflow-wrap:anywhere}
-.task-meta{font-size:10px;color:var(--muted);margin-top:7px;line-height:1.5}
 .task-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-.task-actions .btn{padding:8px 10px}
-.bar{height:4px;border-radius:10px;background:#202b3a;margin-top:11px;overflow:hidden}
-.bar>span{display:block;height:100%;background:var(--green);width:0;transition:width .3s}
-.footer{padding:25px 5px 8px;text-align:center;color:var(--muted);font-size:10px}
-#notice{font-size:11px;color:var(--green);min-height:18px;margin-top:10px}
-@keyframes pulse{50%{opacity:.45}}
-.pulse{animation:pulse 1.7s infinite}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
-@media(max-width:560px){header{padding:12px}main{padding:12px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.metric-value{font-size:25px}.panel{padding:13px}.form-row{grid-template-columns:1fr}#scene{min-height:190px}.live{font-size:9px;padding:7px}}
+.task-actions .btn{padding:8px}
+.empty{font-size:11px;color:var(--muted);padding:12px 0;line-height:1.6}
+#notice{font-size:11px;min-height:18px;margin-top:10px;overflow-wrap:anywhere}
+#scene{width:100%;height:auto;background:#08111b;border:1px solid #253d4e;border-radius:10px}
+.room-note{font-size:10px;color:var(--muted);line-height:1.6;margin-top:10px}
+.activity{padding:10px 0;border-bottom:1px solid #1d2938;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.footer{text-align:center;color:var(--muted);font-size:10px;padding:24px 0}
+@media(max-width:750px){.layout{grid-template-columns:1fr}}
+@media(max-width:520px){header{padding:12px}main{padding:10px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{padding:12px}.form-row{grid-template-columns:1fr}.metric-value{font-size:24px}}
 </style>
 </head>
 <body>
 <header>
-  <div class="brand"><div class="logo">L</div><div><h1>LEAF <span class="green">OS</span></h1><div class="subtitle">AI OPERATIONS CENTER · v0.3</div></div></div>
-  <div class="live"><span class="dot pulse"></span><span id="connectionLabel">CONECTANDO...</span></div>
+  <div>
+    <h1>LEAF <span class="green">OS</span></h1>
+    <div class="subtitle">AI OPERATIONS CENTER</div>
+  </div>
+  <div class="live" id="connectionLabel">CONECTANDO...</div>
 </header>
+
 <main>
-  <div class="section-title"><div><div class="eyebrow">Command center</div><h2>Centro de operaciones</h2></div><span class="tag" id="clock">--:--:--</span></div>
+  <div class="section-title">
+    <div><div class="small">COMMAND CENTER</div><h2>Centro de operaciones</h2></div>
+    <span class="tag" id="clock">--:--:--</span>
+  </div>
+
   <section class="metrics">
-    <div class="panel"><div class="metric-label">AGENTES REGISTRADOS</div><div class="metric-value green" id="metricAgents">4</div><div class="metric-foot">Agentes registrados en el servidor</div></div>
-    <div class="panel"><div class="metric-label">TRABAJANDO</div><div class="metric-value blue" id="metricWorking">0</div><div class="metric-foot">Tareas marcadas como activas</div></div>
-    <div class="panel"><div class="metric-label">TAREAS COMPLETADAS</div><div class="metric-value purple" id="metricDone">0</div><div class="metric-foot">Datos del backend</div></div>
-    <div class="panel"><div class="metric-label">ERRORES</div><div class="metric-value red" id="metricErrors">0</div><div class="metric-foot">Tareas marcadas con error</div></div>
+    <div class="panel"><div class="metric-label">AGENTES</div><div class="metric-value green" id="metricAgents">4</div></div>
+    <div class="panel"><div class="metric-label">TRABAJANDO</div><div class="metric-value" id="metricWorking">0</div></div>
+    <div class="panel"><div class="metric-label">COMPLETADAS</div><div class="metric-value" id="metricDone">0</div></div>
+    <div class="panel"><div class="metric-label">ERRORES</div><div class="metric-value" id="metricErrors">0</div></div>
   </section>
+
   <div class="layout">
     <div class="stack">
-      <section class="panel control-room">
-        <div class="room-top"><div><div class="eyebrow">Virtual environment</div><h2>Sala de operaciones 3D</h2></div><span class="tag">LOCAL VIEW</span></div>
-        <canvas id="scene" width="900" height="510" aria-label="Vista visual de LEAF OS"></canvas>
-        <div class="room-controls">
-          <button class="btn" id="rotateLeft" type="button">↶ Girar</button>
-          <button class="btn" id="rotateRight" type="button">Girar ↷</button>
-          <button class="btn" id="zoomIn" type="button">＋ Acercar</button>
-          <button class="btn" id="zoomOut" type="button">－ Alejar</button>
-          <button class="btn" id="resetView" type="button">Restablecer vista</button>
-        </div>
-        <div class="room-note">La sala representa visualmente los estados registrados. La animación no representa procesamiento de IA real.</div>
-      </section>
       <section class="panel">
-        <div class="section-title"><div><div class="eyebrow">Task manager</div><h2>Crear y asignar trabajo</h2></div><span class="tag">TASKS</span></div>
+        <div class="section-title"><h2>Sala de operaciones</h2><span class="tag">LEAF</span></div>
+        <canvas id="scene" width="800" height="300"></canvas>
+        <div class="room-note">Simulación visual del estado de los agentes. No representa procesamiento real de video.</div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title"><h2>Crear una tarea</h2><span class="tag">TASK MANAGER</span></div>
         <form id="taskForm">
           <div class="form-row">
-            <div><label for="agentSelect">AGENTE RESPONSABLE</label><select id="agentSelect" required></select></div>
-            <div><label for="taskPriority">PRIORIDAD</label><select id="taskPriority"><option value="Normal">Normal</option><option value="Alta">Alta</option><option value="Urgente">Urgente</option></select></div>
+            <div>
+              <label for="agentSelect">AGENTE RESPONSABLE</label>
+              <select id="agentSelect" required>
+                <option value="clip-agent">Clip Agent</option>
+                <option value="trend-agent">Trend Agent</option>
+                <option value="monitor-agent">Monitor Agent</option>
+                <option value="quality-agent">Quality Agent</option>
+              </select>
+            </div>
+            <div>
+              <label for="taskPriority">PRIORIDAD</label>
+              <select id="taskPriority">
+                <option>Normal</option>
+                <option>Alta</option>
+                <option>Urgente</option>
+              </select>
+            </div>
           </div>
-          <label for="taskDescription">DESCRIPCIÓN</label>
-          <input id="taskDescription" maxlength="500" placeholder="Ej.: preparar un clip de prueba" required>
+
+          <label for="taskDescription">DESCRIPCIÓN DE LA TAREA</label>
+          <input id="taskDescription" maxlength="500" placeholder="Ej.: preparar un clip de una transmisión" required>
+
+          <label for="videoUrl">ENLACE DEL VIDEO</label>
+          <input id="videoUrl" type="url" maxlength="1000" placeholder="https://www.youtube.com/..." autocomplete="url">
+
+          <div class="room-note">Puedes introducir un enlace de YouTube, TikTok o Kick. Usa contenido propio o que tengas permiso para utilizar.</div>
           <button class="btn btn-primary" id="createButton" type="submit">＋ Crear tarea</button>
           <div id="notice" role="status" aria-live="polite"></div>
         </form>
       </section>
+
       <section class="panel">
-        <div class="section-title"><div><div class="eyebrow">Queue</div><h2>Cola de tareas</h2></div><span class="tag" id="queueCount">0 TAREAS</span></div>
-        <div id="taskList" class="task-list"><div class="empty">Cargando tareas del servidor...</div></div>
+        <div class="section-title"><h2>Cola de tareas</h2><span class="tag" id="queueCount">0</span></div>
+        <div id="taskList" class="task-list"><div class="empty">Cargando tareas...</div></div>
       </section>
     </div>
+
     <div class="stack">
       <section class="panel">
-        <div class="section-title"><div><div class="eyebrow">Agent fleet</div><h2>Estado de los agentes</h2></div><span class="tag" id="agentCount">4 AGENTES</span></div>
-        <div id="agentList" class="agent-grid"></div>
+        <div class="section-title"><h2>Agentes</h2><span class="tag" id="agentCount">4</span></div>
+        <div id="agentList" class="agent-grid"><div class="empty">Cargando agentes...</div></div>
       </section>
+
       <section class="panel">
-        <div class="section-title"><div><div class="eyebrow">Event stream</div><h2>Monitor de actividad</h2></div><span class="tag">SERVIDOR</span></div>
+        <div class="section-title"><h2>Actividad</h2><span class="tag">SERVIDOR</span></div>
         <div id="activityList" class="activity-list"><div class="empty">Cargando actividad...</div></div>
-        <button class="btn" id="clearActivity" type="button" style="width:100%;margin-top:12px">Limpiar registro visual</button>
       </section>
+
       <section class="panel">
-        <div class="eyebrow">System health</div><h2>Estado del sistema</h2>
-        <div style="margin-top:16px"><div class="agent-head"><span class="small">Interfaz web</span><span class="green small">ACTIVA</span></div><div class="bar"><span style="width:100%"></span></div></div>
-        <div style="margin-top:16px"><div class="agent-head"><span class="small">Registro de tareas</span><span class="yellow small" id="taskHealth">CONECTANDO</span></div><div class="bar"><span id="taskHealthBar" style="width:30%"></span></div></div>
-        <div style="margin-top:16px"><div class="agent-head"><span class="small">Backend conectado</span><span class="yellow small" id="backendHealth">PENDIENTE</span></div><div class="bar"><span id="backendHealthBar" style="width:0;background:var(--yellow)"></span></div></div>
-        <div class="room-note">Las tareas se registran en el backend. Los agentes todavía no ejecutan automáticamente trabajos de video o IA.</div>
+        <h2>Estado del sistema</h2>
+        <p class="small">Interfaz: <span class="green">ACTIVA</span></p>
+        <p class="small">Backend: <span id="backendHealth">Comprobando...</span></p>
+        <p class="small">Procesamiento real de videos: pendiente de implementar.</p>
       </section>
     </div>
   </div>
-  <div class="footer">LEAF OS COMMAND CENTER · Panel web conectado a la API</div>
+
+  <div class="footer">LEAF OS · COMMAND CENTER</div>
 </main>
-<script src="agents.js"></script>
-<script src="app.js"></script>
+
 <script>
 "use strict";
-const $=id=>document.getElementById(id);
-const API="https://leaf-os.onrender.com";
-const names={
- "clip-agent":{short:"CLIP",icon:"C"},
- "trend-agent":{short:"TREND",icon:"T"},
- "monitor-agent":{short:"MON",icon:"M"},
- "quality-agent":{short:"QA",icon:"Q"}
-};
-let agents=[],tasks=[],activity=[],camera=0,zoom=1,loading=false;
 
-function safe(value){
- return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+const API = "https://leaf-os.onrender.com";
+const $ = id => document.getElementById(id);
+
+let agents = [];
+let tasks = [];
+let activity = [];
+let loading = false;
+
+function safe(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[ch]));
 }
-function now(){return new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});}
-function setNotice(message,isError=false){
- $("notice").textContent=message;
- $("notice").style.color=isError?"var(--red)":"var(--green)";
+
+function setNotice(message, error = false) {
+  $("notice").textContent = message;
+  $("notice").style.color = error ? "var(--red)" : "var(--green)";
 }
-async function api(path,options={}){
- const response=await fetch(API+path,{
-  ...options,
-  headers:{"Content-Type":"application/json",...(options.headers||{})}
- });
- let data;
- try{data=await response.json();}catch{data={};}
- if(!response.ok)throw new Error(data.detail||"Error del servidor ("+response.status+")");
- return data;
+
+async function api(path, options = {}) {
+  const response = await fetch(API + path, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    }
+  });
+
+  let data = {};
+  try { data = await response.json(); } catch {}
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Error del servidor: " + response.status);
+  }
+  return data;
 }
-function agentName(id){return agents.find(a=>a.id===id)?.name||id;}
-function statusClass(status){return ["working","error","completed"].includes(status)?status:"";}
-function renderAgents(){
- $("agentList").innerHTML=agents.map(agent=>{
-  const meta=names[agent.id]||{icon:"A"};
-  const task=tasks.find(t=>t.agent_id===agent.id&&(t.status==="working"||t.status==="pending"));
-  return `<div class="agent-card">
-   <div class="agent-head"><div class="agent-identity"><div class="agent-icon">${meta.icon}</div><div><div class="agent-name">${safe(agent.name)}</div><div class="agent-role">${safe(agent.role)}</div></div></div>
-   <span class="badge ${statusClass(agent.status)}">${safe((agent.status||"idle").toUpperCase())}</span></div>
-   <div class="agent-task">ACTIVIDAD ACTUAL<br><strong>${task?safe(task.description):"Sin tarea asignada"}</strong></div>
-  </div>`;
- }).join("");
- $("agentSelect").innerHTML=agents.map(a=>`<option value="${safe(a.id)}">${safe(a.name)}</option>`).join("");
- $("agentCount").textContent=agents.length+" AGENTES";
- $("metricAgents").textContent=agents.length;
+
+function agentName(id) {
+  return agents.find(agent => agent.id === id)?.name || id || "Sin asignar";
 }
-function renderTasks(){
- $("queueCount").textContent=tasks.length+" TAREAS";
- $("taskList").innerHTML=tasks.length?tasks.slice().reverse().map(task=>{
-  const status=task.status||"pending";
-  return `<div class="task-item">
-   <div class="agent-head"><div class="task-title">Tarea · ${safe(task.description)}</div><span class="badge ${statusClass(status)}">${safe(status.toUpperCase())}</span></div>
-   <div class="task-meta">Agente: ${safe(agentName(task.agent_id))}<br>Prioridad: ${safe(task.priority||"Normal")}<br>ID: ${safe(task.id)}</div>
-   <div class="task-actions">
-    ${status==="pending"?`<button class="btn btn-primary" data-task="${safe(task.id)}" data-status="working">Iniciar</button>`:""}
-    ${status==="working"?`<button class="btn btn-primary" data-task="${safe(task.id)}" data-status="completed">Completar</button>`:""}
-    ${!["error","completed"].includes(status)?`<button class="btn btn-danger" data-task="${safe(task.id)}" data-status="error">Marcar error</button>`:""}
-    ${status==="error"?`<button class="btn" data-task="${safe(task.id)}" data-status="pending">Reintentar</button>`:""}
-   </div></div>`;
- }).join(""):`<div class="empty">Todavía no hay tareas. Crea una para verla aquí.</div>`;
- $("metricWorking").textContent=tasks.filter(t=>t.status==="working").length;
- $("metricDone").textContent=tasks.filter(t=>t.status==="completed").length;
- $("metricErrors").textContent=tasks.filter(t=>t.status==="error").length;
+
+function badgeClass(status) {
+  return ["working", "error", "completed"].includes(status) ? status : "";
 }
-function renderActivity(){
- $("activityList").innerHTML=activity.length?activity.map(item=>{
-  const type=item.type||"info";
-  const time=item.timestamp?new Date(item.timestamp).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"}):(item.time||"");
-  const icon=type==="success"?"✓":type==="error"?"!":"›";
-  return `<div class="activity"><div class="activity-icon">${icon}</div><div><div class="activity-text">${safe(item.message)}</div><div class="activity-time">${safe(time)}</div></div></div>`;
- }).join(""):`<div class="empty">No hay eventos registrados todavía.</div>`;
+
+function renderAgents() {
+  $("agentList").innerHTML = agents.length ? agents.map(agent => `
+    <div class="agent-card">
+      <div class="agent-head">
+        <strong>${safe(agent.name)}</strong>
+        <span class="badge ${badgeClass(agent.status)}">${safe((agent.status || "idle").toUpperCase())}</span>
+      </div>
+      <div class="agent-role">${safe(agent.role)}</div>
+      <div class="task-meta">ID: ${safe(agent.id)}</div>
+    </div>
+  `).join("") : '<div class="empty">No hay agentes disponibles.</div>';
+
+  if (agents.length) {
+    const previous = $("agentSelect").value;
+    $("agentSelect").innerHTML = agents.map(agent =>
+      `<option value="${safe(agent.id)}">${safe(agent.name)}</option>`
+    ).join("");
+    if (agents.some(agent => agent.id === previous)) {
+      $("agentSelect").value = previous;
+    }
+  }
+
+  $("agentCount").textContent = agents.length + " AGENTES";
+  $("metricAgents").textContent = agents.length;
 }
-function renderAll(){renderAgents();renderTasks();drawScene();}
-async function refreshData(){
- try{
-  const results=await Promise.all([api("/api/agents"),api("/api/tasks"),api("/api/activity?limit=30")]);
-  agents=results[0];tasks=results[1];activity=results[2];
-  $("connectionLabel").textContent="BACKEND CONECTADO";
-  $("connectionLabel").style.color="var(--green)";
-  $("backendHealth").textContent="CONECTADO";
-  $("backendHealth").style.color="var(--green)";
-  $("backendHealthBar").style.width="100%";
-  $("taskHealth").textContent="ACTIVO";
-  $("taskHealthBar").style.width="100%";
-  renderAll();renderActivity();
- }catch(error){
-  $("connectionLabel").textContent="SIN CONEXIÓN";
-  $("connectionLabel").style.color="var(--red)";
-  $("backendHealth").textContent="DESCONECTADO";
-  $("backendHealth").style.color="var(--red)";
-  $("backendHealthBar").style.width="0";
-  $("taskHealth").textContent="SIN CONEXIÓN";
-  $("taskHealthBar").style.width="0";
-  setNotice("No se pudo conectar con Render. Espera unos segundos y vuelve a intentar.",true);
-  console.error("LEAF OS API:",error);
- }
+
+function renderTasks() {
+  $("queueCount").textContent = tasks.length + " TAREAS";
+
+  $("taskList").innerHTML = tasks.length ? tasks.slice().reverse().map(task => {
+    const status = task.status || "pending";
+    const videoUrl = task.video_url || task.videoUrl || "";
+
+    return `
+      <div class="task-item">
+        <div class="agent-head">
+          <div class="task-title">${safe(task.description)}</div>
+          <span class="badge ${badgeClass(status)}">${safe(status.toUpperCase())}</span>
+        </div>
+        <div class="task-meta">
+          Agente: ${safe(agentName(task.agent_id))}<br>
+          Prioridad: ${safe(task.priority || "Normal")}<br>
+          ID: ${safe(task.id)}
+          ${videoUrl ? `<br>Video: <a href="${safe(videoUrl)}" target="_blank" rel="noopener noreferrer" style="color:var(--blue)">Abrir enlace</a>` : ""}
+        </div>
+        <div class="task-actions">
+          ${status === "pending" ? `<button class="btn btn-primary" data-task="${safe(task.id)}" data-status="working">Iniciar</button>` : ""}
+          ${status === "working" ? `<button class="btn btn-primary" data-task="${safe(task.id)}" data-status="completed">Completar</button>` : ""}
+          ${!["error","completed"].includes(status) ? `<button class="btn" data-task="${safe(task.id)}" data-status="error">Marcar error</button>` : ""}
+          ${status === "error" ? `<button class="btn" data-task="${safe(task.id)}" data-status="pending">Reintentar</button>` : ""}
+        </div>
+      </div>`;
+  }).join("") : '<div class="empty">Todavía no hay tareas. Crea una para comenzar.</div>';
+
+  $("metricWorking").textContent = tasks.filter(t => t.status === "working").length;
+  $("metricDone").textContent = tasks.filter(t => t.status === "completed").length;
+  $("metricErrors").textContent = tasks.filter(t => t.status === "error").length;
 }
-$("taskForm").addEventListener("submit",async event=>{
- event.preventDefault();
- if(loading)return;
- const agent_id=$("agentSelect").value;
- const description=$("taskDescription").value.trim();
- const priority=$("taskPriority").value;
- if(!agent_id||!description){setNotice("Selecciona un agente y escribe una tarea.",true);return;}
- loading=true;$("createButton").disabled=true;$("createButton").textContent="Creando...";
- try{
-  await api("/api/tasks",{method:"POST",body:JSON.stringify({agent_id,description,priority})});
-  $("taskDescription").value="";
-  setNotice("Tarea guardada en el servidor.");
-  await refreshData();
- }catch(error){setNotice("No se pudo crear: "+error.message,true);}
- finally{loading=false;$("createButton").disabled=false;$("createButton").textContent="＋ Crear tarea";}
+
+function renderActivity() {
+  $("activityList").innerHTML = activity.length ? activity.map(item => {
+    let time = "";
+    if (item.timestamp) {
+      time = new Date(item.timestamp).toLocaleTimeString([], {
+        hour:"2-digit", minute:"2-digit", second:"2-digit"
+      });
+    }
+    return `<div class="activity">${safe(item.message)}<div class="activity-time">${safe(time)}</div></div>`;
+  }).join("") : '<div class="empty">No hay actividad registrada.</div>';
+}
+
+function drawScene() {
+  const canvas = $("scene");
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width, h = canvas.height;
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = "#08111b";
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.strokeStyle = "#194438";
+  for (let x = 0; x < w; x += 40) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+  }
+  for (let y = 0; y < h; y += 40) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  }
+
+  ctx.fillStyle = "#55ffc0";
+  ctx.font = "bold 23px system-ui";
+  ctx.textAlign = "center";
+  ctx.fillText("LEAF // COMMAND CENTER", w / 2, 45);
+
+  const spacing = w / Math.max(agents.length + 1, 2);
+  agents.forEach((agent, index) => {
+    const x = spacing * (index + 1);
+    const y = h / 2;
+    ctx.fillStyle = agent.status === "working" ? "#55ffc0" :
+      agent.status === "error" ? "#ff7085" : "#62a8ff";
+    ctx.fillRect(x - 35, y - 25, 70, 50);
+    ctx.fillStyle = "#eaf2ff";
+    ctx.font = "11px system-ui";
+    ctx.fillText(String(agent.name).slice(0, 15), x, y + 45);
+    ctx.fillText(String(agent.status || "idle").toUpperCase(), x, y + 62);
+  });
+}
+
+async function refreshData() {
+  try {
+    const results = await Promise.all([
+      api("/api/agents"),
+      api("/api/tasks"),
+      api("/api/activity?limit=30")
+    ]);
+
+    agents = results[0];
+    tasks = results[1];
+    activity = results[2];
+
+    $("connectionLabel").textContent = "BACKEND CONECTADO";
+    $("backendHealth").textContent = "CONECTADO";
+    $("backendHealth").style.color = "var(--green)";
+
+    renderAgents();
+    renderTasks();
+    renderActivity();
+    drawScene();
+  } catch (error) {
+    $("connectionLabel").textContent = "SIN CONEXIÓN";
+    $("backendHealth").textContent = "DESCONECTADO";
+    $("backendHealth").style.color = "var(--red)";
+    console.error("LEAF OS:", error);
+  }
+}
+
+$("taskForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  if (loading) return;
+
+  const agent_id = $("agentSelect").value;
+  const description = $("taskDescription").value.trim();
+  const priority = $("taskPriority").value;
+  const video_url = $("videoUrl").value.trim();
+
+  if (!agent_id || !description) {
+    setNotice("Selecciona un agente y escribe la descripción.", true);
+    return;
+  }
+
+  if (video_url) {
+    try {
+      const parsed = new URL(video_url);
+      const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+      const allowed =
+        host === "youtube.com" ||
+        host === "youtu.be" ||
+        host === "m.youtube.com" ||
+        host === "tiktok.com" ||
+        host.endsWith(".tiktok.com") ||
+        host === "kick.com" ||
+        host.endsWith(".kick.com");
+
+      if (parsed.protocol !== "https:" || !allowed) {
+        setNotice("Usa un enlace HTTPS de YouTube, TikTok o Kick.", true);
+        return;
+      }
+    } catch {
+      setNotice("El enlace del video no es válido.", true);
+      return;
+    }
+  }
+
+  loading = true;
+  $("createButton").disabled = true;
+  $("createButton").textContent = "Guardando...";
+
+  try {
+    await api("/api/tasks", {
+      method: "POST",
+      body: JSON.stringify({
+        agent_id,
+        description,
+        priority,
+        video_url
+      })
+    });
+
+    $("taskDescription").value = "";
+    $("videoUrl").value = "";
+    setNotice("Tarea enviada al servidor.");
+    await refreshData();
+  } catch (error) {
+    setNotice("No se pudo crear la tarea: " + error.message, true);
+  } finally {
+    loading = false;
+    $("createButton").disabled = false;
+    $("createButton").textContent = "＋ Crear tarea";
+  }
 });
-$("taskList").addEventListener("click",async event=>{
- const button=event.target.closest("button[data-task]");
- if(!button||loading)return;
- const id=button.dataset.task,status=button.dataset.status;
- loading=true;button.disabled=true;
- try{
-  await api("/api/tasks/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({status})});
-  setNotice("Estado de tarea actualizado.");
-  await refreshData();
- }catch(error){setNotice("No se pudo actualizar: "+error.message,true);button.disabled=false;}
- finally{loading=false;}
+
+$("taskList").addEventListener("click", async event => {
+  const button = event.target.closest("button[data-task]");
+  if (!button || loading) return;
+
+  loading = true;
+  button.disabled = true;
+
+  try {
+    await api("/api/tasks/" + encodeURIComponent(button.dataset.task), {
+      method: "PATCH",
+      body: JSON.stringify({ status: button.dataset.status })
+    });
+    setNotice("Estado actualizado.");
+    await refreshData();
+  } catch (error) {
+    setNotice("No se pudo actualizar: " + error.message, true);
+    button.disabled = false;
+  } finally {
+    loading = false;
+  }
 });
-$("clearActivity").addEventListener("click",()=>{
- activity=[];
- renderActivity();
- setNotice("Registro visual limpiado. Los eventos del servidor se mostrarán al actualizar.");
-});
-function drawScene(){
- const canvas=$("scene"),ctx=canvas.getContext("2d"),w=canvas.width,h=canvas.height;
- ctx.clearRect(0,0,w,h);ctx.fillStyle="#08111b";ctx.fillRect(0,0,w,h);
- const glow=ctx.createRadialGradient(w/2,h/2,20,w/2,h/2,w*.7);
- glow.addColorStop(0,"#15352f");glow.addColorStop(1,"#08111b");ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
- ctx.save();ctx.translate(w/2,h/2+35);ctx.scale(zoom,zoom);ctx.rotate(camera*.035);
- ctx.beginPath();ctx.moveTo(-390,-125);ctx.lineTo(390,-125);ctx.lineTo(445,145);ctx.lineTo(-445,145);ctx.closePath();
- const floor=ctx.createLinearGradient(0,-130,0,170);floor.addColorStop(0,"#14372e");floor.addColorStop(1,"#0a191c");ctx.fillStyle=floor;ctx.fill();ctx.strokeStyle="#285749";ctx.stroke();
- ctx.lineWidth=1;ctx.strokeStyle="#235344";
- for(let i=-10;i<=10;i++){ctx.beginPath();ctx.moveTo(i*39,-125);ctx.lineTo(i*45,145);ctx.stroke();}
- for(let i=0;i<8;i++){const y=-105+i*34;ctx.beginPath();ctx.moveTo(-390+i*5,y);ctx.lineTo(390-i*5,y);ctx.stroke();}
- ctx.fillStyle="#10252b";ctx.fillRect(-280,-205,560,56);ctx.strokeStyle="#55ffc0";ctx.strokeRect(-280,-205,560,56);
- ctx.fillStyle="#55ffc0";ctx.font="bold 20px system-ui";ctx.textAlign="center";ctx.fillText("LEAF // COMMAND CENTER",0,-171);
- const positions=[[-270,-60],[-95,-10],[95,-10],[270,-60]],colors=["#55ffc0","#62a8ff","#b99aff","#ffd477"];
- agents.forEach((agent,index)=>{
-  const [x,y]=positions[index],color=colors[index%4],active=agent.status==="working",error=agent.status==="error";
-  ctx.fillStyle="#03090c99";ctx.beginPath();ctx.ellipse(x,y+77,66,16,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle="#17352f";ctx.beginPath();ctx.moveTo(x-55,y+12);ctx.lineTo(x-39,y-4);ctx.lineTo(x+57,y-4);ctx.lineTo(x+42,y+12);ctx.closePath();ctx.fill();
-  ctx.fillStyle="#0b151c";ctx.fillRect(x-48,y+12,90,49);ctx.strokeStyle="#2c5149";ctx.strokeRect(x-48,y+12,90,49);
-  ctx.fillStyle="#102d2b";ctx.fillRect(x-36,y-29,72,40);ctx.strokeStyle=color;ctx.lineWidth=2;ctx.strokeRect(x-36,y-29,72,40);
-  ctx.strokeStyle=active?color:"#42655f";ctx.beginPath();ctx.moveTo(x-27,y-5);ctx.lineTo(x-13,y-14);ctx.lineTo(x-3,y-1);ctx.lineTo(x+9,y-20);ctx.lineTo(x+25,y-9);ctx.stroke();
-  ctx.fillStyle=error?"#ff7085":active?color:"#7894a4";ctx.beginPath();ctx.arc(x,y-48,7,0,Math.PI*2);ctx.fill();
-  if(active){ctx.strokeStyle=color;ctx.globalAlpha=.5;ctx.beginPath();ctx.arc(x,y-48,13,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;}
-  ctx.fillStyle="#edf8ff";ctx.font="bold 12px system-ui";ctx.textAlign="center";ctx.fillText((names[agent.id]?.short||agent.name).toUpperCase(),x,y+83);
-  ctx.fillStyle=error?"#ff7085":active?color:"#8aa2b2";ctx.font="10px system-ui";ctx.fillText((agent.status||"idle").toUpperCase(),x,y+100);
- });
- ctx.restore();ctx.textAlign="left";ctx.fillStyle="#7894a4";ctx.font="10px monospace";ctx.fillText("LEAF ENVIRONMENT / VISUAL SIMULATION",15,22);ctx.textAlign="right";ctx.fillText("AGENTS: "+agents.length,w-15,22);
+
+function updateClock() {
+  $("clock").textContent = new Date().toLocaleTimeString();
 }
-$("rotateLeft").addEventListener("click",()=>{camera--;drawScene();});
-$("rotateRight").addEventListener("click",()=>{camera++;drawScene();});
-$("zoomIn").addEventListener("click",()=>{zoom=Math.min(1.25,zoom+.08);drawScene();});
-$("zoomOut").addEventListener("click",()=>{zoom=Math.max(.75,zoom-.08);drawScene();});
-$("resetView").addEventListener("click",()=>{camera=0;zoom=1;drawScene();});
-function tick(){$("clock").textContent=now();drawScene();}
-setInterval(tick,1000);
+
+updateClock();
+setInterval(updateClock, 1000);
+drawScene();
 refreshData();
-setInterval(refreshData,15000);
+setInterval(refreshData, 15000);
 </script>
 </body>
 </html>
