@@ -374,13 +374,8 @@ def process_clip_job(job_id, video_url, count, duration):
                 f"Falló la generación de clips ({job_id}): {error_message}",
                 "error",
             )
-
     finally:
-        # El estado de los trabajos es temporal y vive en memoria.
-        # Los archivos generados se conservan en el directorio temporal
-        # mientras el servicio y su almacenamiento local los mantengan.
-
-
+        pass
 @app.get("/")
 def root():
     return {
