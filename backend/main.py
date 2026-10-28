@@ -3,7 +3,9 @@ from datetime import datetime, timezone
 from threading import Lock
 from uuid import uuid4
 from urllib.parse import urlparse
+import subprocess
 
+import imageio_ffmpeg
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -140,6 +142,33 @@ def health():
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+
+
+@app.get("/api/tools/ffmpeg")
+def check_ffmpeg():
+    try:
+        ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
+
+        result = subprocess.run(
+            [ffmpeg_path, "-version"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=True,
+        )
+
+        first_line = result.stdout.splitlines()[0]
+
+        return {
+            "available": True,
+            "version": first_line,
+        }
+
+    except Exception as exc:
+        return {
+            "available": False,
+            "error": str(exc),
+        }
 
 
 @app.get("/api/status")
